@@ -1,4 +1,6 @@
-#include "event.h"
+#ifndef LWPTTR_EVENT_H
+#define LWPTTR_EVENT_H
+
 #include "cleaner.h"
 
 #include <lwproctrace.pb-c.h>
@@ -16,15 +18,6 @@
  */
 int lwpttr_event_pack(struct _Lwproctrace__Event *event,
                       void **data, size_t *size,
-                      lwpttr_cleaner_t *cleaner) {
-  *size = lwproctrace__event__get_packed_size(event);
-  *data = malloc(*size);
-  if (! data) {
-    lwpttr_cleaner_cleanup(cleaner);
-    *size = 0;
-    return -1;
-  }
-  *size = lwproctrace__event__pack(event, *data);
-  lwpttr_cleaner_cleanup(cleaner);
-  return 0;
-}
+                      lwpttr_cleaner_t *cleaner);
+
+#endif /* #ifndef LWPTTR_EVENT_H */

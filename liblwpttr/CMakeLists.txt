@@ -13,11 +13,13 @@ add_custom_command(
 add_library(
   lwpttr
   STATIC
-  include/liblwpttr/event.h
+  include/liblwpttr/proc_begin.h
   src/cleaner.c
   src/cleaner.h
   src/event.c
+  src/event.h
   src/macros.h
+  src/proc_begin.c
   src/stringlist.c
   src/stringlist.h
   src/symlink.c

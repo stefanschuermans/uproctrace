@@ -1,5 +1,5 @@
-#ifndef LWPTTR_EVENT_H
-#define LWPTTR_EVENT_H
+#ifndef LWPTTR_PROC_BEGIN_H
+#define LWPTTR_PROC_BEGIN_H
 
 #include <stdlib.h>
 
@@ -10,6 +10,6 @@
  * @return 0 on success (*data, *size set),
  *         -1 on error (*data = NULL, *size = 0)
  */
-int lwpttr_event_proc_begin(void **data, size_t *size);
+int lwpttr_proc_begin(void **data, size_t *size);
 
-#endif /* #ifndef LWPTTR_EVENT_H */
+#endif /* #ifndef LWPTTR_PROC_BEGIN_H */
