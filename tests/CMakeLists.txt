@@ -5,9 +5,12 @@ add_test(
   bash -c
   "
     > out.proto
-    LWPTPL_OUTPUT=out.proto \
-    LD_PRELOAD=${CMAKE_BINARY_DIR}/liblwptpl/liblwptpl.so \
-    /bin/true a b 'c d'
+    (
+      export LWPTPL_OUTPUT=out.proto
+      export LD_PRELOAD=${CMAKE_BINARY_DIR}/liblwptpl/liblwptpl.so
+      /bin/true a b 'c d'
+      /bin/false e f 'g h'
+    )
     ls -l out.proto
     protoc --proto_path ${CMAKE_SOURCE_DIR}/liblwpttr lwproctrace.proto \
            --decode lwproctrace.event < out.proto
