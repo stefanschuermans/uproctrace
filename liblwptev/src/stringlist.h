@@ -1,5 +1,5 @@
-#ifndef LWPTTR_STRINGLIST_H
-#define LWPTTR_STRINGLIST_H
+#ifndef LWPTEV_STRINGLIST_H
+#define LWPTEV_STRINGLIST_H
 
 #include "cleaner.h"
 
@@ -17,4 +17,4 @@
 int lwptev_stringlist_read(char const *pathname, size_t *n, char ***strs,
                            lwptev_cleaner_t *cleaner);
 
-#endif /* #ifndef LWPTTR_STRINGLIST_H */
+#endif /* #ifndef LWPTEV_STRINGLIST_H */

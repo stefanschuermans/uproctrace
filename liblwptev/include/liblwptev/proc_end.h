@@ -1,5 +1,5 @@
-#ifndef LWPTTR_PROC_END_H
-#define LWPTTR_PROC_END_H
+#ifndef LWPTEV_PROC_END_H
+#define LWPTEV_PROC_END_H
 
 #include <stdlib.h>
 
@@ -12,4 +12,4 @@
  */
 int lwptev_proc_end(void **data, size_t *size);
 
-#endif /* #ifndef LWPTTR_PROC_END_H */
+#endif /* #ifndef LWPTEV_PROC_END_H */

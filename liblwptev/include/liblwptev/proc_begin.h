@@ -1,5 +1,5 @@
-#ifndef LWPTTR_PROC_BEGIN_H
-#define LWPTTR_PROC_BEGIN_H
+#ifndef LWPTEV_PROC_BEGIN_H
+#define LWPTEV_PROC_BEGIN_H
 
 #include <stdlib.h>
 
@@ -12,4 +12,4 @@
  */
 int lwptev_proc_begin(void **data, size_t *size);
 
-#endif /* #ifndef LWPTTR_PROC_BEGIN_H */
+#endif /* #ifndef LWPTEV_PROC_BEGIN_H */

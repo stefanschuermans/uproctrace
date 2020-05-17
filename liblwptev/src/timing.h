@@ -1,5 +1,5 @@
-#ifndef LWPTTR_TIMING_H
-#define LWPTTR_TIMING_H
+#ifndef LWPTEV_TIMING_H
+#define LWPTEV_TIMING_H
 
 #include <lwproctrace.pb-c.h>
 
@@ -16,4 +16,4 @@ void lwptev_timing_get_timestamp(struct _Lwproctrace__Timespec *timestamp);
 void lwptev_timing_get_proc_cpu_time(struct _Lwproctrace__Timespec
                                      *proc_cpu_time);
 
-#endif /* #ifndef LWPTTR_TIMING_H */
+#endif /* #ifndef LWPTEV_TIMING_H */

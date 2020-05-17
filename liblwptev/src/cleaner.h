@@ -1,5 +1,5 @@
-#ifndef LWPTTR_CLEANER_H
-#define LWPTTR_CLEANER_H
+#ifndef LWPTEV_CLEANER_H
+#define LWPTEV_CLEANER_H
 
 /**
  * @brief cleaner object
@@ -29,4 +29,4 @@ int lwptev_cleaner_add_ptr(lwptev_cleaner_t *cleaner, void *ptr);
  */
 void lwptev_cleaner_cleanup(lwptev_cleaner_t *cleaner);
 
-#endif /* #ifndef LWPTTR_CLEANER_H */
+#endif /* #ifndef LWPTEV_CLEANER_H */

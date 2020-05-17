@@ -1,5 +1,5 @@
-#ifndef LWPTTR_SYMLINK_H
-#define LWPTTR_SYMLINK_H
+#ifndef LWPTEV_SYMLINK_H
+#define LWPTEV_SYMLINK_H
 
 #include "cleaner.h"
 
@@ -14,4 +14,4 @@
 int lwptev_symlink_read(char const *pathname, char **target,
                         lwptev_cleaner_t *cleaner);
 
-#endif /* #ifndef LWPTTR_SYMLINK_H */
+#endif /* #ifndef LWPTEV_SYMLINK_H */
