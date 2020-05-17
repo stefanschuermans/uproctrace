@@ -51,6 +51,10 @@ int lwpttr_event_proc_begin(void **data, size_t *size) {
                       &proc_begin.cmdline, cleaner) != 0) {
     return -1;
   }
+  if (stringlist_read("/proc/self/environ", &proc_begin.n_environ,
+                      &proc_begin.environ, cleaner) != 0) {
+    return -1;
+  }
 
   struct _Lwproctrace__Event event = LWPROCTRACE__EVENT__INIT;
   event.timestamp = &timestamp;
