@@ -1,5 +1,6 @@
 #include <liblwpttr/event.h>
 #include "cleaner.h"
+#include "stringlist.h"
 #include "symlink.h"
 #include "timestamp.h"
 
@@ -44,6 +45,10 @@ int lwpttr_event_proc_begin(void **data, size_t *size) {
     return -1;
   }
   if (symlink_read("/proc/self/cwd", &proc_begin.cwd, cleaner) != 0) {
+    return -1;
+  }
+  if (stringlist_read("/proc/self/cmdline", &proc_begin.n_cmdline,
+                      &proc_begin.cmdline, cleaner) != 0) {
     return -1;
   }
 

@@ -7,7 +7,7 @@ add_test(
     > out.proto
     LWPTPL_OUTPUT=out.proto \
     LD_PRELOAD=${CMAKE_BINARY_DIR}/liblwptpl/liblwptpl.so \
-    /bin/true
+    /bin/true a b 'c d'
     ls -l out.proto
     protoc --proto_path ${CMAKE_SOURCE_DIR}/liblwpttr lwproctrace.proto \
            --decode lwproctrace.event < out.proto

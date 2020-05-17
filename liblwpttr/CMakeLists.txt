@@ -18,6 +18,8 @@ add_library(
   src/cleaner.h
   src/event.c
   src/macros.h
+  src/stringlist.c
+  src/stringlist.h
   src/symlink.c
   src/symlink.h
   src/timestamp.c
