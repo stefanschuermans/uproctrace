@@ -9,7 +9,7 @@
  * @param[in] pathname path to symbolic link
  * @return malloc-ed string containting link target or NULL
  */
-static char * symlink_read_target(char const *pathname) {
+static char * lwptev_symlink_read_target(char const *pathname) {
   size_t sz = 256;
   char *target = NULL;
   while (1) {
@@ -35,9 +35,9 @@ static char * symlink_read_target(char const *pathname) {
   }
 }
 
-int symlink_read(char const *pathname, char **target,
-                 lwptev_cleaner_t *cleaner) {
-  *target = symlink_read_target(pathname);
+int lwptev_symlink_read(char const *pathname, char **target,
+                        lwptev_cleaner_t *cleaner) {
+  *target = lwptev_symlink_read_target(pathname);
   if (! *target) {
     lwptev_cleaner_cleanup(cleaner);
     return -1;

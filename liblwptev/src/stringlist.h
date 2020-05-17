@@ -14,7 +14,7 @@
  * @return 0 on success, -1 on error
  *         (on error, cleanup is done and cleaner is deallocated)
  */
-int stringlist_read(char const *pathname, size_t *n, char ***strs,
-                    lwptev_cleaner_t *cleaner);
+int lwptev_stringlist_read(char const *pathname, size_t *n, char ***strs,
+                           lwptev_cleaner_t *cleaner);
 
 #endif /* #ifndef LWPTTR_STRINGLIST_H */

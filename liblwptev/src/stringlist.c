@@ -14,7 +14,7 @@
  * @param[out] *size size of file contents
  * @return pointer to malloc-ed file contents or NULL
  */
-static char * stringlist_read_file(char const *pathname, size_t *size) {
+static char * lwptev_stringlist_read_file(char const *pathname, size_t *size) {
   /* it is not possible to get file size before, because this yields zero for
      files like /proc/self/cmdline */
   *size = 0;
@@ -71,7 +71,8 @@ static char * stringlist_read_file(char const *pathname, size_t *size) {
  * @param[out] *cnt number of entries in array
  * @return pointer to malloc-ed array of NULL
  */
-static char ** stringlist_make_ptrs(char *data, size_t sz, size_t *cnt) {
+static char ** lwptev_stringlist_make_ptrs(char *data, size_t sz,
+                                           size_t *cnt) {
   /* count strings */
   size_t pos = 0;
   *cnt = 0;
@@ -94,13 +95,13 @@ static char ** stringlist_make_ptrs(char *data, size_t sz, size_t *cnt) {
   return ptrs;
 }
 
-int stringlist_read(char const *pathname, size_t *n, char ***strs,
-                    lwptev_cleaner_t *cleaner) {
+int lwptev_stringlist_read(char const *pathname, size_t *n, char ***strs,
+                           lwptev_cleaner_t *cleaner) {
   *n = 0;
   *strs = NULL;
   /* read file contents */
   size_t sz;
-  char *data = stringlist_read_file(pathname, &sz);
+  char *data = lwptev_stringlist_read_file(pathname, &sz);
   if (! data) {
     lwptev_cleaner_cleanup(cleaner);
     return -1;
@@ -108,7 +109,7 @@ int stringlist_read(char const *pathname, size_t *n, char ***strs,
   lwptev_cleaner_add_ptr(cleaner, data);
   /* create pointer array */
   size_t cnt;
-  char **ptrs = stringlist_make_ptrs(data, sz, &cnt);
+  char **ptrs = lwptev_stringlist_make_ptrs(data, sz, &cnt);
   if (! ptrs) {
     lwptev_cleaner_cleanup(cleaner);
     return -1;
