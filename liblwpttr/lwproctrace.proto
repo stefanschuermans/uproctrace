@@ -1,0 +1,31 @@
+syntax = "proto2";
+
+package lwproctrace;
+
+message timespec {
+  required int64 sec = 1;
+  optional int32 nsec = 2;
+}
+
+message proc_begin {
+  required int32 pid = 1;
+  optional int32 ppid = 2;
+  optional string exe = 3;
+  optional string cwd = 4;
+  repeated string cmdline = 5;
+  repeated string environ = 6;
+}
+
+message proc_end {
+  required int32 pid = 1;
+}
+
+message event {
+  required timespec timestamp = 1;
+  optional proc_begin proc_begin = 2;
+  optional proc_end proc_end = 3;
+}
+
+message trace {
+  repeated event event = 1;
+}
