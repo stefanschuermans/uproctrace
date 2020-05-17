@@ -12,7 +12,5 @@ add_test(
       /bin/false e f 'g h'
     )
     ls -l out.proto
-    protoc --proto_path ${CMAKE_SOURCE_DIR} lwproctrace.proto \
-           --decode lwproctrace.event < out.proto
   "
 )
