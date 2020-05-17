@@ -22,6 +22,8 @@ add_library(
   src/macros.h
   src/proc_begin.c
   src/proc_end.c
+  src/read_file.c
+  src/read_file.h
   src/stringlist.c
   src/stringlist.h
   src/symlink.c
