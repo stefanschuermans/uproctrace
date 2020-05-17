@@ -12,5 +12,6 @@ add_test(
       /bin/false e f 'g h'
     )
     ls -l out.proto
+    ${CMAKE_BINARY_DIR}/dump/dump.py out.proto
   "
 )
