@@ -1,7 +1,7 @@
 #include <liblwpttr/proc_end.h>
 #include "cleaner.h"
 #include "event.h"
-#include "timestamp.h"
+#include "timing.h"
 
 #include <lwproctrace.pb-c.h>
 
@@ -19,10 +19,14 @@ int lwpttr_proc_end(void **data, size_t *size) {
   }
 
   struct _Lwproctrace__Timespec timestamp = LWPROCTRACE__TIMESPEC__INIT;
-  lwpttr_event_get_timestamp(&timestamp);
+  timing_get_timestamp(&timestamp);
+
+  struct _Lwproctrace__Timespec proc_cpu_time = LWPROCTRACE__TIMESPEC__INIT;
+  timing_get_proc_cpu_time(&proc_cpu_time);
 
   struct _Lwproctrace__ProcEnd proc_end = LWPROCTRACE__PROC_END__INIT;
   proc_end.pid = getpid();
+  proc_end.proc_cpu_time = &proc_cpu_time;
 
   struct _Lwproctrace__Event event = LWPROCTRACE__EVENT__INIT;
   event.timestamp = &timestamp;

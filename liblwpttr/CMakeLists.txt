@@ -26,8 +26,8 @@ add_library(
   src/stringlist.h
   src/symlink.c
   src/symlink.h
-  src/timestamp.c
-  src/timestamp.h
+  src/timing.c
+  src/timing.h
   ${CMAKE_CURRENT_BINARY_DIR}/src/lwproctrace.pb-c.c
   ${CMAKE_CURRENT_BINARY_DIR}/src/lwproctrace.pb-c.h
 )

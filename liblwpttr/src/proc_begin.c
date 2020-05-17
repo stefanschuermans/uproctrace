@@ -3,7 +3,7 @@
 #include "event.h"
 #include "stringlist.h"
 #include "symlink.h"
-#include "timestamp.h"
+#include "timing.h"
 
 #include <lwproctrace.pb-c.h>
 
@@ -21,7 +21,7 @@ int lwpttr_proc_begin(void **data, size_t *size) {
   }
 
   struct _Lwproctrace__Timespec timestamp = LWPROCTRACE__TIMESPEC__INIT;
-  lwpttr_event_get_timestamp(&timestamp);
+  timing_get_timestamp(&timestamp);
 
   struct _Lwproctrace__ProcBegin proc_begin = LWPROCTRACE__PROC_BEGIN__INIT;
   proc_begin.pid = getpid();

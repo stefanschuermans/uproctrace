@@ -18,6 +18,7 @@ message proc_begin {
 
 message proc_end {
   required int32 pid = 1;
+  optional timespec proc_cpu_time = 2;
 }
 
 message event {
