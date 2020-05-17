@@ -14,17 +14,17 @@
  * @return 0 on success (*data, *size set),
  *         -1 on error (*data = NULL, *size = 0)
  */
-int lwpttr_event_pack(struct _Lwproctrace__Event *event,
+int lwptev_event_pack(struct _Lwproctrace__Event *event,
                       void **data, size_t *size,
-                      lwpttr_cleaner_t *cleaner) {
+                      lwptev_cleaner_t *cleaner) {
   *size = lwproctrace__event__get_packed_size(event);
   *data = malloc(*size);
   if (! data) {
-    lwpttr_cleaner_cleanup(cleaner);
+    lwptev_cleaner_cleanup(cleaner);
     *size = 0;
     return -1;
   }
   *size = lwproctrace__event__pack(event, *data);
-  lwpttr_cleaner_cleanup(cleaner);
+  lwptev_cleaner_cleanup(cleaner);
   return 0;
 }

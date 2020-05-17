@@ -36,12 +36,12 @@ static char * symlink_read_target(char const *pathname) {
 }
 
 int symlink_read(char const *pathname, char **target,
-                 lwpttr_cleaner_t *cleaner) {
+                 lwptev_cleaner_t *cleaner) {
   *target = symlink_read_target(pathname);
   if (! *target) {
-    lwpttr_cleaner_cleanup(cleaner);
+    lwptev_cleaner_cleanup(cleaner);
     return -1;
   }
-  lwpttr_cleaner_add_ptr(cleaner, *target);
+  lwptev_cleaner_add_ptr(cleaner, *target);
   return 0;
 }

@@ -3,14 +3,14 @@
 
 #include <stdlib.h>
 
-struct lwpttr_cleaner_s {
+struct lwptev_cleaner_s {
   unsigned int free_ptr_cnt; /**< number of pointer to be freed */
   void * free_ptrs[64]; /**< pointers to be freed */
-  lwpttr_cleaner_t *next; /**< next cleaner object, linked list */
+  lwptev_cleaner_t *next; /**< next cleaner object, linked list */
 };
 
-lwpttr_cleaner_t * lwpttr_cleaner_new(void) {
-  lwpttr_cleaner_t *cleaner = malloc(sizeof(lwpttr_cleaner_t));
+lwptev_cleaner_t * lwptev_cleaner_new(void) {
+  lwptev_cleaner_t *cleaner = malloc(sizeof(lwptev_cleaner_t));
   if (! cleaner) {
     return NULL;
   }
@@ -19,20 +19,20 @@ lwpttr_cleaner_t * lwpttr_cleaner_new(void) {
   return cleaner;
 }
 
-int lwpttr_cleaner_add_ptr(lwpttr_cleaner_t *cleaner, void *ptr) {
+int lwptev_cleaner_add_ptr(lwptev_cleaner_t *cleaner, void *ptr) {
   /* find last cleaner in chain */
-  lwpttr_cleaner_t *cl = cleaner;
+  lwptev_cleaner_t *cl = cleaner;
   while (cl->next != NULL) {
     cl = cl->next;
   }
   /* last cleaner full? */
   if (cl->free_ptr_cnt >= countof(cl->free_ptrs)) {
     /* create new one */
-    cl->next = lwpttr_cleaner_new();
+    cl->next = lwptev_cleaner_new();
     /* error ? */
     if (! cl->next) {
       /* cleanup everything and reutrn error */
-      lwpttr_cleaner_cleanup(cleaner);
+      lwptev_cleaner_cleanup(cleaner);
       return -1;
     }
     /* go to new cleaner */
@@ -43,8 +43,8 @@ int lwpttr_cleaner_add_ptr(lwpttr_cleaner_t *cleaner, void *ptr) {
   return 0;
 }
 
-void lwpttr_cleaner_cleanup(lwpttr_cleaner_t *cleaner) {
-  lwpttr_cleaner_t *cl = cleaner;
+void lwptev_cleaner_cleanup(lwptev_cleaner_t *cleaner) {
+  lwptev_cleaner_t *cl = cleaner;
   while (cl) {
     /* free all pointers in cleaner */
     for (unsigned int i = 0; i < cl->free_ptr_cnt; ++i) {

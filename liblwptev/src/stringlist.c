@@ -95,25 +95,25 @@ static char ** stringlist_make_ptrs(char *data, size_t sz, size_t *cnt) {
 }
 
 int stringlist_read(char const *pathname, size_t *n, char ***strs,
-                    lwpttr_cleaner_t *cleaner) {
+                    lwptev_cleaner_t *cleaner) {
   *n = 0;
   *strs = NULL;
   /* read file contents */
   size_t sz;
   char *data = stringlist_read_file(pathname, &sz);
   if (! data) {
-    lwpttr_cleaner_cleanup(cleaner);
+    lwptev_cleaner_cleanup(cleaner);
     return -1;
   }
-  lwpttr_cleaner_add_ptr(cleaner, data);
+  lwptev_cleaner_add_ptr(cleaner, data);
   /* create pointer array */
   size_t cnt;
   char **ptrs = stringlist_make_ptrs(data, sz, &cnt);
   if (! ptrs) {
-    lwpttr_cleaner_cleanup(cleaner);
+    lwptev_cleaner_cleanup(cleaner);
     return -1;
   }
-  lwpttr_cleaner_add_ptr(cleaner, ptrs);
+  lwptev_cleaner_add_ptr(cleaner, ptrs);
   *n = cnt;
   *strs = ptrs;
   return 0;

@@ -1,4 +1,4 @@
-#include <liblwpttr/proc_begin.h>
+#include <liblwptev/proc_begin.h>
 #include "cleaner.h"
 #include "event.h"
 #include "stringlist.h"
@@ -11,17 +11,17 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-int lwpttr_proc_begin(void **data, size_t *size) {
+int lwptev_proc_begin(void **data, size_t *size) {
   *data = NULL;
   *size = 0;
 
-  lwpttr_cleaner_t *cleaner = lwpttr_cleaner_new();
+  lwptev_cleaner_t *cleaner = lwptev_cleaner_new();
   if (! cleaner) {
     return -1;
   }
 
   struct _Lwproctrace__Timespec timestamp = LWPROCTRACE__TIMESPEC__INIT;
-  timing_get_timestamp(&timestamp);
+  lwptev_timing_get_timestamp(&timestamp);
 
   struct _Lwproctrace__ProcBegin proc_begin = LWPROCTRACE__PROC_BEGIN__INIT;
   proc_begin.pid = getpid();
@@ -46,5 +46,5 @@ int lwpttr_proc_begin(void **data, size_t *size) {
   event.timestamp = &timestamp;
   event.proc_begin = &proc_begin;
 
-  return lwpttr_event_pack(&event, data, size, cleaner);
+  return lwptev_event_pack(&event, data, size, cleaner);
 }

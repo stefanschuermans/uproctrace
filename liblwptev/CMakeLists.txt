@@ -3,18 +3,18 @@ add_custom_command(
   ${CMAKE_CURRENT_BINARY_DIR}/src/lwproctrace.pb-c.c
   ${CMAKE_CURRENT_BINARY_DIR}/src/lwproctrace.pb-c.h
   DEPENDS
-  ${CMAKE_CURRENT_SOURCE_DIR}/lwproctrace.proto
+  ${CMAKE_SOURCE_DIR}/lwproctrace.proto
   COMMAND
-  protoc-c --proto_path ${CMAKE_CURRENT_SOURCE_DIR}
+  protoc-c --proto_path ${CMAKE_SOURCE_DIR}
            --c_out ${CMAKE_CURRENT_BINARY_DIR}/src
            lwproctrace.proto
 )
 
 add_library(
-  lwpttr
+  lwptev
   STATIC
-  include/liblwpttr/proc_begin.h
-  include/liblwpttr/proc_end.h
+  include/liblwptev/proc_begin.h
+  include/liblwptev/proc_end.h
   src/cleaner.c
   src/cleaner.h
   src/event.c
@@ -33,7 +33,7 @@ add_library(
 )
 
 target_include_directories(
-  lwpttr
+  lwptev
   PUBLIC
   include
   PRIVATE
@@ -41,7 +41,7 @@ target_include_directories(
 )
 
 target_link_libraries(
-  lwpttr
+  lwptev
   PUBLIC
   -lprotobuf-c
 )

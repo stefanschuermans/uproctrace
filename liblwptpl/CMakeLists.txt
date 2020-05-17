@@ -7,5 +7,5 @@ add_library(
   src/write.h
 )
 
-target_link_libraries(lwptpl lwpttr)
+target_link_libraries(lwptpl lwptev)
 

@@ -12,6 +12,6 @@
  *         (on error, cleanup is done and cleaner is deallocated)
  */
 int symlink_read(char const *pathname, char **target,
-                 lwpttr_cleaner_t *cleaner);
+                 lwptev_cleaner_t *cleaner);
 
 #endif /* #ifndef LWPTTR_SYMLINK_H */
