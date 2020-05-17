@@ -25,7 +25,3 @@ message event {
   optional proc_begin proc_begin = 2;
   optional proc_end proc_end = 3;
 }
-
-message trace {
-  repeated event event = 1;
-}
