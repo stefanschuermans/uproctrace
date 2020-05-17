@@ -14,7 +14,14 @@ add_library(
   lwpttr
   STATIC
   include/liblwpttr/event.h
+  src/cleaner.c
+  src/cleaner.h
   src/event.c
+  src/macros.h
+  src/symlink.c
+  src/symlink.h
+  src/timestamp.c
+  src/timestamp.h
   ${CMAKE_CURRENT_BINARY_DIR}/src/lwproctrace.pb-c.c
   ${CMAKE_CURRENT_BINARY_DIR}/src/lwproctrace.pb-c.h
 )
