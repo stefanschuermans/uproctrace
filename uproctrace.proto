@@ -22,7 +22,10 @@ message proc_begin {
 
 message proc_end {
   required int32 pid = 1;
-  optional timespec proc_cpu_time = 2;
+  optional timespec cpu_time = 2;
+  optional timespec user_time = 3;
+  optional timespec sys_time = 4;
+  optional int64 max_rss_kb = 5;
 }
 
 message event {
