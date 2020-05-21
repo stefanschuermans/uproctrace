@@ -5,13 +5,13 @@
 
 struct uptev_cleaner_s {
   unsigned int free_ptr_cnt; /**< number of pointer to be freed */
-  void * free_ptrs[64]; /**< pointers to be freed */
-  uptev_cleaner_t *next; /**< next cleaner object, linked list */
+  void *free_ptrs[64];       /**< pointers to be freed */
+  uptev_cleaner_t *next;     /**< next cleaner object, linked list */
 };
 
-uptev_cleaner_t * uptev_cleaner_new(void) {
+uptev_cleaner_t *uptev_cleaner_new(void) {
   uptev_cleaner_t *cleaner = malloc(sizeof(uptev_cleaner_t));
-  if (! cleaner) {
+  if (!cleaner) {
     return NULL;
   }
   cleaner->free_ptr_cnt = 0;
@@ -30,7 +30,7 @@ int uptev_cleaner_add_ptr(uptev_cleaner_t *cleaner, void *ptr) {
     /* create new one */
     cl->next = uptev_cleaner_new();
     /* error ? */
-    if (! cl->next) {
+    if (!cl->next) {
       /* cleanup everything and reutrn error */
       uptev_cleaner_cleanup(cleaner);
       return -1;

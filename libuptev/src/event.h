@@ -16,8 +16,7 @@
  * @return 0 on success (*data, *size set),
  *         -1 on error (*data = NULL, *size = 0)
  */
-int uptev_event_pack(struct _Uproctrace__Event *event,
-                      void **data, size_t *size,
-                      uptev_cleaner_t *cleaner);
+int uptev_event_pack(struct _Uproctrace__Event *event, void **data,
+                     size_t *size, uptev_cleaner_t *cleaner);
 
 #endif /* #ifndef UPTEV_EVENT_H */

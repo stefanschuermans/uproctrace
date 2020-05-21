@@ -1,14 +1,14 @@
-#include "stringlist.h"
 #include "cleaner.h"
+#include "stringlist.h"
 
 #include <fcntl.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/types.h>
 #include <unistd.h>
 
-char * uptev_read_file(char const *pathname, size_t *size) {
+char *uptev_read_file(char const *pathname, size_t *size) {
   /* it is not possible to get file size before, because this yields zero for
      files like /proc/self/cmdline */
   *size = 0;
@@ -20,7 +20,7 @@ char * uptev_read_file(char const *pathname, size_t *size) {
   /* get initial buffer */
   size_t sz = 4096;
   char *data = malloc(sz);
-  if (! data) {
+  if (!data) {
     close(fd);
     return NULL;
   }
@@ -35,7 +35,7 @@ char * uptev_read_file(char const *pathname, size_t *size) {
       close(fd);
       return NULL;
     }
-    if (len == 0 ) {
+    if (len == 0) {
       /* end of file -> return data */
       *size = pos;
       return data;
@@ -47,7 +47,7 @@ char * uptev_read_file(char const *pathname, size_t *size) {
       sz *= 2;
       char *data2 = realloc(data, sz);
       /* out of memory ? -> cleanup and return failure */
-      if (! data2) {
+      if (!data2) {
         free(data);
         close(fd);
         return NULL;

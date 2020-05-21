@@ -9,13 +9,13 @@
  * @param[in] pathname path to symbolic link
  * @return malloc-ed string containting link target or NULL
  */
-static char * uptev_symlink_read_target(char const *pathname) {
+static char *uptev_symlink_read_target(char const *pathname) {
   size_t sz = 256;
   char *target = NULL;
   while (1) {
     /* get buffer */
     target = malloc(sz);
-    if (! target) {
+    if (!target) {
       return NULL;
     }
     /* get link target */
@@ -35,9 +35,9 @@ static char * uptev_symlink_read_target(char const *pathname) {
   }
 }
 
-char * uptev_symlink_read(char const *pathname, uptev_cleaner_t *cleaner) {
+char *uptev_symlink_read(char const *pathname, uptev_cleaner_t *cleaner) {
   char *target = uptev_symlink_read_target(pathname);
-  if (! target) {
+  if (!target) {
     return NULL;
   }
   /* success: add malloc-ed object to cleaner and return target string */

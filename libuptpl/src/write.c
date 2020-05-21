@@ -9,15 +9,15 @@
 
 struct uptpl_event_header_s {
   uint8_t magic[4]; /**< u p t 0 */
-  uint8_t size[4]; /**< size of payload in network byte oder */
+  uint8_t size[4];  /**< size of payload in network byte oder */
 } __attribute__((packed));
 
 void uptpl_write(void const *data, size_t size) {
-  if (! data || ! size || size > 0xFFFFFFFF) {
+  if (!data || !size || size > 0xFFFFFFFF) {
     return;
   }
   char const *filename = getenv("UPTPL_OUTPUT");
-  if (! filename) {
+  if (!filename) {
     return;
   }
   int fd = open(filename, O_WRONLY | O_APPEND);
@@ -29,14 +29,13 @@ void uptpl_write(void const *data, size_t size) {
     return;
   }
   struct uptpl_event_header_s uptpl_event_header = {
-    .magic = { 'u', 'p', 't', '0' },
-    .size = {
-      (size >> 24) & 0xFF,
-      (size >> 16) & 0xFF,
-      (size >> 8) & 0xFF,
-      size & 0xFF,
-    }
-  };
+      .magic = {'u', 'p', 't', '0'},
+      .size = {
+          (size >> 24) & 0xFF,
+          (size >> 16) & 0xFF,
+          (size >> 8) & 0xFF,
+          size & 0xFF,
+      }};
   write(fd, &uptpl_event_header, sizeof(uptpl_event_header));
   write(fd, data, size);
   flock(fd, LOCK_UN);

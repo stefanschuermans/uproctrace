@@ -1,7 +1,7 @@
-#include <uptev/proc_end.h>
 #include "cleaner.h"
 #include "event.h"
 #include "timing.h"
+#include <uptev/proc_end.h>
 
 #include <uproctrace.pb-c.h>
 
@@ -14,7 +14,7 @@ int uptev_proc_end(void **data, size_t *size) {
   *size = 0;
 
   uptev_cleaner_t *cleaner = uptev_cleaner_new();
-  if (! cleaner) {
+  if (!cleaner) {
     return -1;
   }
 

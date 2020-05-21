@@ -12,7 +12,7 @@ typedef struct uptev_cleaner_s uptev_cleaner_t;
  * @brief creater cleaner object
  * @return pointer to cleaner object or NULL on error
  */
-uptev_cleaner_t * uptev_cleaner_new(void);
+uptev_cleaner_t *uptev_cleaner_new(void);
 
 /**
  * @brief add pointer to be freed to cleaner object

@@ -5,12 +5,11 @@
 #include <fcntl.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/types.h>
 #include <unistd.h>
 
-static char ** uptev_stringlist_make_ptrs(char *data, size_t sz,
-                                          size_t *cnt) {
+static char **uptev_stringlist_make_ptrs(char *data, size_t sz, size_t *cnt) {
   /* count strings */
   size_t pos = 0;
   *cnt = 0;
@@ -23,7 +22,7 @@ static char ** uptev_stringlist_make_ptrs(char *data, size_t sz,
   }
   /* allocate array for pointers */
   char **ptrs = malloc(*cnt * sizeof(char *));
-  if (! ptrs) {
+  if (!ptrs) {
     *cnt = 0;
     return NULL;
   }
@@ -43,13 +42,13 @@ int uptev_stringlist_read(char const *pathname, size_t *n, char ***strs,
   /* read file contents */
   size_t sz;
   char *data = uptev_read_file(pathname, &sz);
-  if (! data) {
+  if (!data) {
     return -1;
   }
   /* create pointer array */
   size_t cnt;
   char **ptrs = uptev_stringlist_make_ptrs(data, sz, &cnt);
-  if (! ptrs) {
+  if (!ptrs) {
     free(data);
     return -1;
   }

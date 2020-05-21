@@ -1,9 +1,9 @@
-#include <uptev/proc_begin.h>
 #include "cleaner.h"
 #include "event.h"
 #include "stringlist.h"
 #include "symlink.h"
 #include "timing.h"
+#include <uptev/proc_begin.h>
 
 #include <uproctrace.pb-c.h>
 
@@ -16,7 +16,7 @@ int uptev_proc_begin(void **data, size_t *size) {
   *size = 0;
 
   uptev_cleaner_t *cleaner = uptev_cleaner_new();
-  if (! cleaner) {
+  if (!cleaner) {
     return -1;
   }
 

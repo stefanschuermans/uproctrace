@@ -13,7 +13,7 @@ void uptev_timing_get_timestamp(struct _Uproctrace__Timespec *timestamp);
  * @brief fill timestamp with total CPU time used by process
  * @param[in,out] timestamp initialized structure to set to proccess CPU time
  */
-void uptev_timing_get_proc_cpu_time(struct _Uproctrace__Timespec
-                                     *proc_cpu_time);
+void uptev_timing_get_proc_cpu_time(
+    struct _Uproctrace__Timespec *proc_cpu_time);
 
 #endif /* #ifndef UPTEV_TIMING_H */
