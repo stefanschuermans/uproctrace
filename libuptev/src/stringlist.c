@@ -16,6 +16,9 @@ static char ** uptev_stringlist_make_ptrs(char *data, size_t sz,
   *cnt = 0;
   while (pos < sz) {
     pos += strlen(data + pos) + 1;
+    if (pos > sz) {
+      break; /* last string overshoots end of data -> ignore it */
+    }
     ++*cnt;
   }
   /* allocate array for pointers */
