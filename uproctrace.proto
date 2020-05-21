@@ -1,10 +1,14 @@
 syntax = "proto2";
 
-package lwproctrace;
+package uproctrace;
 
 message timespec {
   required int64 sec = 1;
   optional int32 nsec = 2;
+}
+
+message stringlist {
+  repeated string s = 1;
 }
 
 message proc_begin {
@@ -12,8 +16,8 @@ message proc_begin {
   optional int32 ppid = 2;
   optional string exe = 3;
   optional string cwd = 4;
-  repeated string cmdline = 5;
-  repeated string environ = 6;
+  optional stringlist cmdline = 5;
+  optional stringlist environ = 6;
 }
 
 message proc_end {

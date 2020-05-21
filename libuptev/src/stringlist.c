@@ -9,15 +9,8 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-/**
- * @brief make array with pointers to strings
- * @param[in] data pointer to string list
- * @param[in] sz size of string list
- * @param[out] *cnt number of entries in array
- * @return pointer to malloc-ed array of NULL
- */
-static char ** lwptev_stringlist_make_ptrs(char *data, size_t sz,
-                                           size_t *cnt) {
+static char ** uptev_stringlist_make_ptrs(char *data, size_t sz,
+                                          size_t *cnt) {
   /* count strings */
   size_t pos = 0;
   *cnt = 0;
@@ -40,26 +33,26 @@ static char ** lwptev_stringlist_make_ptrs(char *data, size_t sz,
   return ptrs;
 }
 
-int lwptev_stringlist_read(char const *pathname, size_t *n, char ***strs,
-                           lwptev_cleaner_t *cleaner) {
+int uptev_stringlist_read(char const *pathname, size_t *n, char ***strs,
+                          uptev_cleaner_t *cleaner) {
   *n = 0;
   *strs = NULL;
   /* read file contents */
   size_t sz;
-  char *data = lwptev_read_file(pathname, &sz);
+  char *data = uptev_read_file(pathname, &sz);
   if (! data) {
-    lwptev_cleaner_cleanup(cleaner);
     return -1;
   }
-  lwptev_cleaner_add_ptr(cleaner, data);
   /* create pointer array */
   size_t cnt;
-  char **ptrs = lwptev_stringlist_make_ptrs(data, sz, &cnt);
+  char **ptrs = uptev_stringlist_make_ptrs(data, sz, &cnt);
   if (! ptrs) {
-    lwptev_cleaner_cleanup(cleaner);
+    free(data);
     return -1;
   }
-  lwptev_cleaner_add_ptr(cleaner, ptrs);
+  /* success: add malloc-ed object to cleaner and return string array */
+  uptev_cleaner_add_ptr(cleaner, data);
+  uptev_cleaner_add_ptr(cleaner, ptrs);
   *n = cnt;
   *strs = ptrs;
   return 0;

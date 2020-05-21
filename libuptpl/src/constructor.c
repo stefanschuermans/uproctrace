@@ -1,4 +1,4 @@
-#include <liblwptev/proc_begin.h>
+#include <uptev/proc_begin.h>
 
 #include "write.h"
 
@@ -7,6 +7,6 @@
 __attribute__((constructor)) static void constructor(void) {
   void *data = NULL;
   size_t size = 0;
-  lwptev_proc_begin(&data, &size);
-  lwptpl_write(data, size);
+  uptev_proc_begin(&data, &size);
+  uptpl_write(data, size);
 }

@@ -1,5 +1,5 @@
-#ifndef LWPTEV_READ_FILE_H
-#define LWPTEV_READ_FILE_H
+#ifndef UPTEV_READ_FILE_H
+#define UPTEV_READ_FILE_H
 
 /**
  * @brief read file contents
@@ -7,6 +7,6 @@
  * @param[out] *size size of file contents
  * @return pointer to malloc-ed file contents or NULL
  */
-char * lwptev_read_file(char const *pathname, size_t *size);
+char * uptev_read_file(char const *pathname, size_t *size);
 
-#endif /* #ifndef LWPTEV_READ_FILE_H */
+#endif /* #ifndef UPTEV_READ_FILE_H */

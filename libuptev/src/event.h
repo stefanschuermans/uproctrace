@@ -1,7 +1,9 @@
-#include "event.h"
+#ifndef UPTEV_EVENT_H
+#define UPTEV_EVENT_H
+
 #include "cleaner.h"
 
-#include <lwproctrace.pb-c.h>
+#include <uproctrace.pb-c.h>
 
 #include <stdlib.h>
 
@@ -14,17 +16,8 @@
  * @return 0 on success (*data, *size set),
  *         -1 on error (*data = NULL, *size = 0)
  */
-int lwptev_event_pack(struct _Lwproctrace__Event *event,
+int uptev_event_pack(struct _Uproctrace__Event *event,
                       void **data, size_t *size,
-                      lwptev_cleaner_t *cleaner) {
-  *size = lwproctrace__event__get_packed_size(event);
-  *data = malloc(*size);
-  if (! data) {
-    lwptev_cleaner_cleanup(cleaner);
-    *size = 0;
-    return -1;
-  }
-  *size = lwproctrace__event__pack(event, *data);
-  lwptev_cleaner_cleanup(cleaner);
-  return 0;
-}
+                      uptev_cleaner_t *cleaner);
+
+#endif /* #ifndef UPTEV_EVENT_H */

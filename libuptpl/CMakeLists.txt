@@ -1,5 +1,5 @@
 add_library(
-  lwptpl
+  uptpl
   SHARED
   src/constructor.c
   src/destructor.c
@@ -7,5 +7,5 @@ add_library(
   src/write.h
 )
 
-target_link_libraries(lwptpl lwptev)
+target_link_libraries(uptpl uptev)
 

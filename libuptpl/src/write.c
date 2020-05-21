@@ -7,16 +7,16 @@
 #include <sys/file.h>
 #include <unistd.h>
 
-struct lwptpl_event_header_s {
-  uint8_t magic[4]; /**< l w p t */
+struct uptpl_event_header_s {
+  uint8_t magic[4]; /**< u p t 0 */
   uint8_t size[4]; /**< size of payload in network byte oder */
 } __attribute__((packed));
 
-void lwptpl_write(void const *data, size_t size) {
+void uptpl_write(void const *data, size_t size) {
   if (! data || ! size || size > 0xFFFFFFFF) {
     return;
   }
-  char const *filename = getenv("LWPTPL_OUTPUT");
+  char const *filename = getenv("UPTPL_OUTPUT");
   if (! filename) {
     return;
   }
@@ -28,8 +28,8 @@ void lwptpl_write(void const *data, size_t size) {
     close(fd);
     return;
   }
-  struct lwptpl_event_header_s lwptpl_event_header = {
-    .magic = { 'l', 'w', 'p', 't' },
+  struct uptpl_event_header_s uptpl_event_header = {
+    .magic = { 'u', 'p', 't', '0' },
     .size = {
       (size >> 24) & 0xFF,
       (size >> 16) & 0xFF,
@@ -37,7 +37,7 @@ void lwptpl_write(void const *data, size_t size) {
       size & 0xFF,
     }
   };
-  write(fd, &lwptpl_event_header, sizeof(lwptpl_event_header));
+  write(fd, &uptpl_event_header, sizeof(uptpl_event_header));
   write(fd, data, size);
   flock(fd, LOCK_UN);
   close(fd);

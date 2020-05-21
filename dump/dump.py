@@ -1,12 +1,12 @@
 #! /usr/bin/env python3
 
 import argparse
-import lwproctrace_pb2
+import uproctrace_pb2
 import struct
 
 
 def parse_args():
-    parser = argparse.ArgumentParser(description='dump lwproctrace trace')
+    parser = argparse.ArgumentParser(description='dump uproctrace trace')
     parser.add_argument('trace', help='trace file')
     args = parser.parse_args()
     return args
@@ -15,7 +15,7 @@ def parse_args():
 def dump_event(f):
     # skip till after magic
     magic = f.read(4)
-    while magic != b'lwpt':
+    while magic != b'upt0':
         if len(magic) < 4:
             return False  # EOF
         magic = magic[1:] + f.read(1)  # search for magic byte for byte
@@ -29,7 +29,7 @@ def dump_event(f):
     if len(data) < size:
         return False  # EOF
     # unpack event
-    event = lwproctrace_pb2.event.FromString(data)
+    event = uproctrace_pb2.event.FromString(data)
     # dump event
     print('event {')
     for line in repr(event).split('\n'):

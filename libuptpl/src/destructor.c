@@ -1,4 +1,4 @@
-#include <liblwptev/proc_end.h>
+#include <uptev/proc_end.h>
 
 #include "write.h"
 
@@ -7,6 +7,6 @@
 __attribute__((destructor)) static void destructor(void) {
   void *data = NULL;
   size_t size = 0;
-  lwptev_proc_end(&data, &size);
-  lwptpl_write(data, size);
+  uptev_proc_end(&data, &size);
+  uptpl_write(data, size);
 }

@@ -1,20 +1,20 @@
 add_custom_command(
   OUTPUT
-  ${CMAKE_CURRENT_BINARY_DIR}/src/lwproctrace.pb-c.c
-  ${CMAKE_CURRENT_BINARY_DIR}/src/lwproctrace.pb-c.h
+  ${CMAKE_CURRENT_BINARY_DIR}/src/uproctrace.pb-c.c
+  ${CMAKE_CURRENT_BINARY_DIR}/src/uproctrace.pb-c.h
   DEPENDS
-  ${CMAKE_SOURCE_DIR}/lwproctrace.proto
+  ${CMAKE_SOURCE_DIR}/uproctrace.proto
   COMMAND
   protoc-c --proto_path ${CMAKE_SOURCE_DIR}
            --c_out ${CMAKE_CURRENT_BINARY_DIR}/src
-           lwproctrace.proto
+           uproctrace.proto
 )
 
 add_library(
-  lwptev
+  uptev
   STATIC
-  include/liblwptev/proc_begin.h
-  include/liblwptev/proc_end.h
+  include/uptev/proc_begin.h
+  include/uptev/proc_end.h
   src/cleaner.c
   src/cleaner.h
   src/event.c
@@ -30,12 +30,12 @@ add_library(
   src/symlink.h
   src/timing.c
   src/timing.h
-  ${CMAKE_CURRENT_BINARY_DIR}/src/lwproctrace.pb-c.c
-  ${CMAKE_CURRENT_BINARY_DIR}/src/lwproctrace.pb-c.h
+  ${CMAKE_CURRENT_BINARY_DIR}/src/uproctrace.pb-c.c
+  ${CMAKE_CURRENT_BINARY_DIR}/src/uproctrace.pb-c.h
 )
 
 target_include_directories(
-  lwptev
+  uptev
   PUBLIC
   include
   PRIVATE
@@ -43,7 +43,7 @@ target_include_directories(
 )
 
 target_link_libraries(
-  lwptev
+  uptev
   PUBLIC
   -lprotobuf-c
 )

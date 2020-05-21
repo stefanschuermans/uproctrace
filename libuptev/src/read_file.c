@@ -8,7 +8,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-char * lwptev_read_file(char const *pathname, size_t *size) {
+char * uptev_read_file(char const *pathname, size_t *size) {
   /* it is not possible to get file size before, because this yields zero for
      files like /proc/self/cmdline */
   *size = 0;
