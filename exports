@@ -1,0 +1,8 @@
+if [[ -z ${BASH_SOURCE[0]:-} ]]
+then
+  echo "BASH_SOURCE is not net, unsupported shell" >&2
+  return 2
+fi
+export UPT_HOME="$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")"
+export PATH="$UPT_HOME/bin${PATH:+:${PATH}}"
+export PYTHONPATH="$UPT_HOME/python3${PYTHONPATH:+:${PYTHONPATH}}"

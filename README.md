@@ -50,6 +50,12 @@ Run tests:
 ctest
 ```
 
+Set up for direct usage from build directory (to be done in each shell):
+
+```
+source exports
+```
+
 ## Tracing Applications
 
 To trace an application, prefix the command with `upt-trace` and the
@@ -59,12 +65,12 @@ file name for the trace.  For example, to trace the command
 ```
 run the following command:
 ```
-<build dir>/bin/upt-trace mytrace.proto /usr/bin/printf "trace me"
+upt-trace mytrace.proto /usr/bin/printf "trace me"
 ```
 
 To show the recorded events, run:
 ```
-<build dir>/dump/dump.py mytrace.proto
+upt-dump mytrace.proto
 ```
 
 ## Example: Trace Build Process
@@ -77,7 +83,7 @@ Change to the build directory.
 
 Start a new shell to be traced:
 ```
-bin/upt-trace mytrace.proto bash
+upt-trace mytrace.proto bash
 ```
 
 Configure another build directory for this tracing example and run the build:
@@ -97,6 +103,6 @@ exit
 
 Show traced information:
 ```
-dump/dump.py mytrace.proto
+upt-dump mytrace.proto
 ```
 

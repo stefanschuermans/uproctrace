@@ -11,12 +11,14 @@ UPT_HOME="$1"
 
 SCRIPT_DIR="$(dirname "$0")"
 
+source "$UPT_HOME/exports"
+
 rm -rf out.proto
 
-"$UPT_HOME/bin/upt-trace" out.proto "$SCRIPT_DIR/traceme.bash"
+upt-trace out.proto "$SCRIPT_DIR/traceme.bash"
 
 ls -l out.proto
 
-"$UPT_HOME/dump/dump.py" out.proto | tee out.dump
+upt-dump out.proto | tee out.dump
 grep '^ *event *{ *$' out.dump | wc -l | tee out.event_cnt
 grep '^6$' out.event_cnt

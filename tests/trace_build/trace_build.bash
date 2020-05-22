@@ -12,13 +12,15 @@ UPT_HOME="$(readlink -f "$2")"
 
 SCRIPT_DIR="$(dirname "$0")"
 
+source "$UPT_HOME/exports"
+
 rm -rf out.proto build
 
-"$UPT_HOME/bin/upt-trace" out.proto "$SCRIPT_DIR/run_build.bash" "$SOURCE_DIR"
+upt-trace out.proto "$SCRIPT_DIR/run_build.bash" "$SOURCE_DIR"
 
 ls -l out.proto
 
-"$UPT_HOME/dump/dump.py" out.proto | tee out.dump
+upt-dump out.proto | tee out.dump
 grep -A 1 '^ *cmdline {$' out.dump | grep '^ *s: "mkdir"$'
 grep '^ *s: "proc_begin.c"$' out.dump
 grep '^ *s: "libuptpl.so"$' out.dump
