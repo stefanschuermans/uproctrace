@@ -9,10 +9,11 @@ class Process():
     """
     A process parsed from a trace.
     """
-    def __init__(self, pid: int):
+    def __init__(self, proc_id: int, pid: int):
         """
         Initialize process.
         """
+        self._proc_id = proc_id
         self._pid = pid
         self._begin = None
         self._end = None
@@ -34,6 +35,13 @@ class Process():
         if self._begin is None:
             return None
         return self._begin.cmdline
+
+    @property
+    def proc_id(self):
+        """
+        Process ID. (This is not the PID.)
+        """
+        return self._proc_id
 
     @property
     def parent(self):
@@ -84,9 +92,9 @@ class Processes(uproctrace.parse.Visitor):
 
     def _newProcess(self, pid: int):
         """
-        Create new process, set its ID (pid), store it and return it.
+        Create new process, set its PID, store it and return it.
         """
-        proc = Process(pid)
+        proc = Process(len(self._all_processes), pid)
         self._all_processes.append(proc)
         return proc
 
