@@ -20,7 +20,9 @@ upt-trace out.proto "$SCRIPT_DIR/run_build.bash" "$SOURCE_DIR"
 
 ls -l out.proto
 
-upt-dump out.proto | tee out.dump
+upt-tool out.proto dump | tee out.dump
 grep -A 1 '^ *cmdline {$' out.dump | grep '^ *s: "mkdir"$'
 grep '^ *s: "proc_begin.c"$' out.dump
 grep '^ *s: "libuptpl.so"$' out.dump
+
+upt-tool out.proto parse

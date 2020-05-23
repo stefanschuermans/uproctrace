@@ -24,6 +24,6 @@ add_custom_target(
 add_subdirectory(libuptev)
 add_subdirectory(libuptpl)
 add_subdirectory(python3)
-add_subdirectory(upt-dump)
+add_subdirectory(upt-tool)
 add_subdirectory(upt-trace)
 add_subdirectory(tests)

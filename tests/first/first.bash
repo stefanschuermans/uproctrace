@@ -19,6 +19,8 @@ upt-trace out.proto "$SCRIPT_DIR/traceme.bash"
 
 ls -l out.proto
 
-upt-dump out.proto | tee out.dump
+upt-tool out.proto dump | tee out.dump
 grep '^ *event *{ *$' out.dump | wc -l | tee out.event_cnt
 grep '^6$' out.event_cnt
+
+upt-tool out.proto parse
