@@ -25,7 +25,7 @@ apt-get install -y build-essential cmake gcc \
                    libprotobuf-c-dev libprotobuf-dev
                    ninja-build \
                    protobuf-c-compiler protobuf-compiler \
-                   python3 python3-protobuf
+                   pylint3 python3 python3-protobuf
 ```
 
 Change to the directory of this `REAMDE.md` file.

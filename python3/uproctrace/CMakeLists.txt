@@ -26,6 +26,7 @@ endfunction(pyfile)
 pyfile(__init__)
 pyfile(dump)
 pyfile(parse)
+pyfile(processes)
 
 add_custom_target(
   python3_uproctrace
