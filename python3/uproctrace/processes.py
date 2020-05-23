@@ -21,6 +21,15 @@ class Process():
         self._children = list()
 
     @property
+    def begin_timestamp(self) -> list:
+        """
+        Begin timestamp of process.
+        """
+        if self._begin is None:
+            return None
+        return self._begin.timestamp
+
+    @property
     def children(self) -> list:
         """
         List of child processes.
@@ -35,6 +44,15 @@ class Process():
         if self._begin is None:
             return None
         return self._begin.cmdline
+
+    @property
+    def end_timestamp(self) -> list:
+        """
+        End timestamp of process.
+        """
+        if self._end is None:
+            return None
+        return self._end.timestamp
 
     @property
     def proc_id(self):
