@@ -19,7 +19,7 @@ class Process():
         self._parent = None
         self._children = list()
 
-    def addChild(self, child: Process):
+    def addChild(self, child):
         """
         Add a child process.
         """
@@ -37,7 +37,7 @@ class Process():
         """
         self._end = proc_end
 
-    def setParent(self, parent: Process):
+    def setParent(self, parent):
         """
         Set parent process.
         """
@@ -69,7 +69,7 @@ class Processes(uproctrace.parse.Visitor):
         Common processing for all events.
         """
         # store event in timeline
-        self._timeline.setdefault(event.time, list()).append(event)
+        self._timeline.setdefault(event.timestamp, list()).append(event)
 
     def visitProcBegin(self, proc_begin: uproctrace.parse.ProcBegin):
         """

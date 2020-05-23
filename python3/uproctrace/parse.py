@@ -56,7 +56,7 @@ class BaseEvent():
         Get PB2 timespec value in seconds.
         """
         sec = t_s.sec
-        if t_s.hasField('nsec'):
+        if t_s.HasField('nsec'):
             sec += t_s.nsec * 1e-9
         return sec
 
@@ -110,15 +110,15 @@ class ProcBegin(ProcBeginOrEnd):
         Initialize process begin event from PB2 event.
         """
         super().__init__(pb2_ev)
-        p_b = pb2_ev.proc_begin.pid
+        p_b = pb2_ev.proc_begin
         self._pid = p_b.pid
-        self._ppid = p_b.ppid if p_b.hasField('ppid') else None
-        self._exe = p_b.exe if p_b.hasField('exe') else None
-        self._cwd = p_b.cwd if p_b.hasField('cwd') else None
+        self._ppid = p_b.ppid if p_b.HasField('ppid') else None
+        self._exe = p_b.exe if p_b.HasField('exe') else None
+        self._cwd = p_b.cwd if p_b.HasField('cwd') else None
         self._cmdline = self._pb2GetStringList(
-            p_b.cmdline) if p_b.hasField('cmdline') else None
+            p_b.cmdline) if p_b.HasField('cmdline') else None
         self._environ = self._pb2GetStringList(
-            p_b.environ) if p_b.hasField('environ') else None
+            p_b.environ) if p_b.HasField('environ') else None
 
     @property
     def ppid(self) -> int:
@@ -168,12 +168,12 @@ class ProcEnd(ProcBeginOrEnd):
         p_e = pb2_ev.proc_end
         self._pid = p_e.pid
         self._cpu_time = self._pb2GetTimespec(
-            p_e.cpu_time) if p_e.hasField('cpu_time') else None
+            p_e.cpu_time) if p_e.HasField('cpu_time') else None
         self._user_time = self._pb2GetTimespec(
-            p_e.user_time) if p_e.hasField('user_time') else None
+            p_e.user_time) if p_e.HasField('user_time') else None
         self._sys_time = self._pb2GetTimespec(
-            p_e.sys_time) if p_e.hasField('sys_time') else None
-        self._max_rss_kb = p_e.max_rss_kb if p_e.hasField(
+            p_e.sys_time) if p_e.HasField('sys_time') else None
+        self._max_rss_kb = p_e.max_rss_kb if p_e.HasField(
             'max_rss_kb') else None
 
     @property
@@ -238,7 +238,7 @@ def parse_event(proto_file, visitor: Visitor) -> bool:
     if pb2_ev is None:
         return False
     if pb2_ev.HasField('proc_begin'):
-        visitor.visitProcBeEnd(ProcBegin(pb2_ev))
+        visitor.visitProcBegin(ProcBegin(pb2_ev))
     if pb2_ev.HasField('proc_end'):
         visitor.visitProcEnd(ProcEnd(pb2_ev))
     return True
