@@ -54,8 +54,18 @@ class Processes(uproctrace.parse.Visitor):
         """
         super().__init__()
         self._timeline = dict()  # time -> list(parse.BaseEvent)
-        self._current_processes = dict()  # pid -> Process
+        self._all_processes = list()  # list of all processess
+        self._current_processes = dict()  # pid -> process
+        self._toplevel_processes = list()  # list of processes without parent
         self._readTrace(proto_file)
+
+    def _newProcess(self, pid: int):
+        """
+        Create new process, set its ID (pid), store it and return it.
+        """
+        proc = Process(pid)
+        self._all_processes.append(proc)
+        return proc
 
     def _readTrace(self, proto_file):
         """
@@ -77,7 +87,7 @@ class Processes(uproctrace.parse.Visitor):
         """
         self._visitBaseEvent(proc_begin)
         # new process
-        proc = Process(proc_begin.pid)
+        proc = self._newProcess(proc_begin.pid)
         # add process to dict of current processes
         self._current_processes[proc_begin.pid] = proc
         # set begin event of process and process of begin event
@@ -88,17 +98,19 @@ class Processes(uproctrace.parse.Visitor):
             parent = self._current_processes[proc_begin.ppid]
             proc.setParent(parent)
             parent.addChild(proc)
+        else:
+            self._toplevel_processes.append(proc)
 
     def visitProcEnd(self, proc_end: uproctrace.parse.ProcEnd):
         """
         Process a process end event.
         """
         self._visitBaseEvent(proc_end)
-        # get process (or create it it is not known)
+        # get process (or create it if it is not known)
         if proc_end.pid in self._current_processes:
             proc = self._current_processes[proc_end.pid]
         else:
-            proc = Process(proc_end.pid)
+            proc = self._newProcess(proc_end.pid)
         # set end event of process and process of end event
         proc.setEnd(proc_end)
         proc_end.setProcess(proc)
