@@ -68,7 +68,40 @@ class BaseEvent():
         return self._timestamp
 
 
-class ProcBegin(BaseEvent):
+class ProcBeginOrEnd(BaseEvent):
+    """
+    Process begin or end event.
+    """
+    def __init__(self, pb2_ev: pb2.event):
+        """
+        Initialize process begin or end event from PB2 event.
+        """
+        super().__init__(pb2_ev)
+        self._process = None
+        self._pid = None
+
+    @property
+    def pid(self) -> int:
+        """
+        ID of process.
+        """
+        return self._pid
+
+    @property
+    def process(self):
+        """
+        Process object.
+        """
+        return self._process
+
+    def setProcess(self, process):
+        """
+        Set process object.
+        """
+        self._process = process
+
+
+class ProcBegin(ProcBeginOrEnd):
     """
     Process begin event.
     """
@@ -86,13 +119,6 @@ class ProcBegin(BaseEvent):
             p_b.cmdline) if p_b.hasField('cmdline') else None
         self._environ = self._pb2GetStringList(
             p_b.environ) if p_b.hasField('environ') else None
-
-    @property
-    def pid(self) -> int:
-        """
-        ID of process.
-        """
-        return self._pid
 
     @property
     def ppid(self) -> int:
@@ -130,7 +156,7 @@ class ProcBegin(BaseEvent):
         return self._environ.copy()
 
 
-class ProcEnd(BaseEvent):
+class ProcEnd(ProcBeginOrEnd):
     """
     Process end event.
     """

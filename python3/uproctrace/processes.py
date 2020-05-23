@@ -9,7 +9,6 @@ class Process():
     """
     A process parsed from a trace.
     """
-
     def __init__(self, pid: int):
         """
         Initialize process.
@@ -49,12 +48,12 @@ class Processes(uproctrace.parse.Visitor):
     """
     Collection of all processes from a trace.
     """
-
     def __init__(self, proto_file):
         """
         Initialize processes from a trace file (f).
         """
         super().__init__()
+        self._timeline = dict()  # time -> list(parse.BaseEvent)
         self._current_processes = dict()  # pid -> Process
         self._readTrace(proto_file)
 
@@ -65,16 +64,25 @@ class Processes(uproctrace.parse.Visitor):
         while uproctrace.parse.parse_event(proto_file, self):
             pass
 
+    def _visitBaseEvent(self, event: uproctrace.parse.BaseEvent):
+        """
+        Common processing for all events.
+        """
+        # store event in timeline
+        self._timeline.setdefault(event.time, list()).append(event)
+
     def visitProcBegin(self, proc_begin: uproctrace.parse.ProcBegin):
         """
         Process a process begin event.
         """
+        self._visitBaseEvent(proc_begin)
         # new process
         proc = Process(proc_begin.pid)
         # add process to dict of current processes
         self._current_processes[proc_begin.pid] = proc
-        # set begin event of process
+        # set begin event of process and process of begin event
         proc.setBegin(proc_begin)
+        proc_begin.setProcess(proc)
         # connect to parent
         if proc_begin.ppid in self._current_processes:
             parent = self._current_processes[proc_begin.ppid]
@@ -85,12 +93,14 @@ class Processes(uproctrace.parse.Visitor):
         """
         Process a process end event.
         """
+        self._visitBaseEvent(proc_end)
         # get process (or create it it is not known)
         if proc_end.pid in self._current_processes:
             proc = self._current_processes[proc_end.pid]
         else:
             proc = Process(proc_end.pid)
-        # set end event of process
+        # set end event of process and process of end event
         proc.setEnd(proc_end)
+        proc_end.setProcess(proc)
         # remove process from dict of current processes (it ended)
         self._current_processes[proc_end.pid] = None
