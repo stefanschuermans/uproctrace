@@ -3,7 +3,9 @@ Command line interface of UProcTrace: "upt-tool".
 """
 
 import argparse
+import shlex
 import sys
+
 import uproctrace.dump
 import uproctrace.processes
 
@@ -17,12 +19,29 @@ def dump(args):
             pass
 
 
-def parse(args):
+def pstree(args):
     """
-    Parse all events in trace file.
+    Print process tree.
     """
     with open(args.trace, 'rb') as proto_file:
-        uproctrace.processes.Processes(proto_file)
+        processes = uproctrace.processes.Processes(proto_file)
+    # tree output (iterative)
+    to_be_output = [processes.toplevel]
+    while to_be_output:
+        procs = to_be_output[-1]
+        if not procs:
+            del to_be_output[-1]
+            continue
+        indent = '  ' * (len(to_be_output) - 1)
+        proc = procs[0]
+        del procs[0]
+        cmdline = proc.cmdline
+        if cmdline is None:
+            cmdline_str = '???'
+        else:
+            cmdline_str = ' '.join([shlex.quote(s) for s in cmdline])
+        print(indent + cmdline_str)
+        to_be_output.append(proc.children)
 
 
 def parse_args():
@@ -30,15 +49,15 @@ def parse_args():
     Parse command line arguments.
     """
     # set up main parser
-    parser = argparse.ArgumentParser(description='uproctrace tool')
+    parser = argparse.ArgumentParser(description='UProcTrace tool.')
     parser.add_argument('trace', help='trace file')
     subparsers = parser.add_subparsers()
     # dump
-    dump_parser = subparsers.add_parser('dump')
+    dump_parser = subparsers.add_parser('dump', help='Dump events to stdout.')
     dump_parser.set_defaults(func=dump)
-    # parse
-    parse_parser = subparsers.add_parser('parse')
-    parse_parser.set_defaults(func=parse)
+    # pstree
+    pstree_parser = subparsers.add_parser('pstree', help='Print process tree.')
+    pstree_parser.set_defaults(func=pstree)
     # parse
     args = parser.parse_args()
     if not hasattr(args, 'func'):

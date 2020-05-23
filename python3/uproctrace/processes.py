@@ -19,6 +19,29 @@ class Process():
         self._parent = None
         self._children = list()
 
+    @property
+    def children(self) -> list:
+        """
+        List of child processes.
+        """
+        return self._children.copy()
+
+    @property
+    def cmdline(self) -> list:
+        """
+        Command line of process.
+        """
+        if self._begin is None:
+            return None
+        return self._begin.cmdline
+
+    @property
+    def parent(self):
+        """
+        Parent process (or None).
+        """
+        return self._parent
+
     def addChild(self, child):
         """
         Add a child process.
@@ -80,6 +103,13 @@ class Processes(uproctrace.parse.Visitor):
         """
         # store event in timeline
         self._timeline.setdefault(event.timestamp, list()).append(event)
+
+    @property
+    def toplevel(self):
+        """
+        List of toplevel processes.
+        """
+        return self._toplevel_processes.copy()
 
     def visitProcBegin(self, proc_begin: uproctrace.parse.ProcBegin):
         """
