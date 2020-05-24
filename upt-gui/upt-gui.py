@@ -101,7 +101,9 @@ class UptGui:
     PROC_PROC_ID = 0
     PROC_BEGIN = 1
     PROC_END = 2
-    PROC_COMMAND = 3
+    PROC_CMDLINE = 3
+    PROC_CPU_TIME = 4
+    PROC_MAX_RSS_KB = 5
 
     def __init__(self, proto_filename):
         """
@@ -220,8 +222,12 @@ class UptGui:
                 timestamp2str(proc.begin_timestamp))
             self.widProcessesTree.set_value(proc_iter, self.PROC_END,
                                             timestamp2str(proc.end_timestamp))
-            self.widProcessesTree.set_value(proc_iter, self.PROC_COMMAND,
+            self.widProcessesTree.set_value(proc_iter, self.PROC_CMDLINE,
                                             cmdline2str(proc.cmdline))
+            self.widProcessesTree.set_value(proc_iter, self.PROC_CPU_TIME,
+                                            duration2str(proc.cpu_time))
+            self.widProcessesTree.set_value(proc_iter, self.PROC_MAX_RSS_KB,
+                                            kb2str(proc.max_rss_kb))
             to_be_output.append((proc.children, proc_iter))
         # show all processes
         self.widProcessesView.expand_all()
