@@ -46,6 +46,24 @@ class Process():
         return self._begin.cmdline
 
     @property
+    def cpu_time(self) -> float:
+        """
+        CPU time of process (in s).
+        """
+        if self._end is None:
+            return None
+        return self._end.cpu_time
+
+    @property
+    def cwd(self) -> str:
+        """
+        Working directory of process.
+        """
+        if self._begin is None:
+            return None
+        return self._begin.cwd
+
+    @property
     def end_timestamp(self) -> list:
         """
         End timestamp of process.
@@ -53,6 +71,33 @@ class Process():
         if self._end is None:
             return None
         return self._end.timestamp
+
+    @property
+    def environ(self) -> list:
+        """
+        Environment of process.
+        """
+        if self._begin is None:
+            return None
+        return self._begin.environ
+
+    @property
+    def exe(self) -> str:
+        """
+        Executable of process.
+        """
+        if self._begin is None:
+            return None
+        return self._begin.exe
+
+    @property
+    def max_rss_kb(self) -> int:
+        """
+        Maximum resident set size of process (in KiB).
+        """
+        if self._end is None:
+            return None
+        return self._end.max_rss_kb
 
     @property
     def proc_id(self):
@@ -67,6 +112,24 @@ class Process():
         Parent process (or None).
         """
         return self._parent
+
+    @property
+    def sys_time(self) -> float:
+        """
+        System CPU time of process (in s).
+        """
+        if self._end is None:
+            return None
+        return self._end.sys_time
+
+    @property
+    def user_time(self) -> float:
+        """
+        User CPU time of process (in s).
+        """
+        if self._end is None:
+            return None
+        return self._end.user_time
 
     def addChild(self, child):
         """
@@ -103,8 +166,8 @@ class Processes(uproctrace.parse.Visitor):
         """
         super().__init__()
         self._timeline = dict()  # time -> list(parse.BaseEvent)
-        self._all_processes = list()  # list of all processess
-        self._current_processes = dict()  # pid -> process
+        self._all_processes = dict()  # proc_id -> process
+        self._current_processes = dict()  # pid -> process (while pid alive)
         self._toplevel_processes = list()  # list of processes without parent
         self._readTrace(proto_file)
 
@@ -112,8 +175,9 @@ class Processes(uproctrace.parse.Visitor):
         """
         Create new process, set its PID, store it and return it.
         """
-        proc = Process(len(self._all_processes), pid)
-        self._all_processes.append(proc)
+        proc_id = len(self._all_processes)
+        proc = Process(proc_id, pid)
+        self._all_processes[proc_id] = proc
         return proc
 
     def _readTrace(self, proto_file):
@@ -136,6 +200,12 @@ class Processes(uproctrace.parse.Visitor):
         List of toplevel processes.
         """
         return self._toplevel_processes.copy()
+
+    def getProcess(self, proc_id: int):
+        """
+        Return process with proc_id, or None if not found.
+        """
+        return self._all_processes.get(proc_id)
 
     def visitProcBegin(self, proc_begin: uproctrace.parse.ProcBegin):
         """
