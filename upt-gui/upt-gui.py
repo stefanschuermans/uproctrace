@@ -122,6 +122,7 @@ class UptGui:
         self.widProcessesView = self.builder.get_object('ProcessesView')
         handlers = {
             'onDestroy': self.onDestroy,
+            'onDetailsRowActivated': self.onDetailsRowActivated,
             'onProcessesCursorChanged': self.onProcessesCursorChanged
         }
         self.builder.connect_signals(handlers)
@@ -134,71 +135,43 @@ class UptGui:
         """
         Gtk.main_quit()
 
+    def onDetailsRowActivated(self, widget, row, col):
+        """
+        Row in details view has been activated.
+        """
+        # get proc_id of selected row (if any)
+        detail_sel = self.widDetailsView.get_selection()
+        if detail_sel is None:
+            return
+        detail_iter = detail_sel.get_selected()[1]
+        if detail_iter is None:
+            return
+        proc_id = self.widDetailsTree.get_value(detail_iter,
+                                                self.DETAIL_PROC_ID)
+        # do nothing for rows without valid proc_id
+        if proc_id < 0:
+            return
+        # select process
+        self.selectProcess(proc_id)
+        # show details of selected process
+        self.showDetails(proc_id)
+
     def onProcessesCursorChanged(self, widget):
         """
         Cursor changed in processes tree view.
         """
         # get proc_id of selected process
-        proc_id = None
         proc_sel = self.widProcessesView.get_selection()
-        if proc_sel is not None:
-            proc_iter = proc_sel.get_selected()[1]
-            if proc_iter is not None:
-                proc_id = self.widProcessesTree.get_value(
-                    proc_iter, self.PROC_PROC_ID)
-        # forget old details
-        self.widDetailsTree.clear()
-        # leave if no process selected
-        if proc_id is None:
+        if proc_sel is None:
+            self.showDetails(None)
             return
-        # get process, leave if not found
-        proc = self.processes.getProcess(proc_id)
-        if proc is None:
+        proc_iter = proc_sel.get_selected()[1]
+        if proc_iter is None:
+            self.showDetails(None)
             return
-        # add details of new process
-        def add(key: str, value: str, parent_iter=None):
-            detail_iter = self.widDetailsTree.append(parent_iter)
-            self.widDetailsTree.set_value(detail_iter, self.DETAIL_KEY, key)
-            self.widDetailsTree.set_value(detail_iter, self.DETAIL_VALUE,
-                                          value)
-            return detail_iter
-
-        def add_list(key: str, values: list, parent_iter=None):
-            if values is None:
-                return add(key, '???', parent_iter)
-            list_iter = add(key, f'{len(values):d} entries', parent_iter)
-            for i, value in enumerate(values):
-                add(f'{key} {i:d}', value, list_iter)
-
-        add('begin time', timestamp2str(proc.begin_timestamp))
-        add_list('command line', proc.cmdline)
-        add('CPU time', duration2str(proc.cpu_time))
-        add('end time', timestamp2str(proc.end_timestamp))
-        add_list('environment', sorted(proc.environ))
-        add('executable', proc.exe)
-        add('max. resident memory', kb2str(proc.max_rss_kb))
-        add('system CPU time', duration2str(proc.sys_time))
-        add('user CPU time', duration2str(proc.user_time))
-        add('working directory', proc.cwd)
-        # add parent
-        parent_proc = proc.parent
-        if parent_proc is None:
-            add('parent', '???')
-        else:
-            parent_iter = add('parent', cmdline2str(parent_proc.cmdline))
-            self.widDetailsTree.set_value(parent_iter, self.DETAIL_PROC_ID,
-                                          parent_proc.proc_id)
-        # add children
-        child_procs = proc.children
-        if child_procs is None:
-            add('children', '???')
-        else:
-            list_iter = add('children', f'{len(child_procs):d} entries')
-            for i, child_proc in enumerate(child_procs):
-                child_iter = add(f'child {i:d}',
-                                 cmdline2str(child_proc.cmdline), list_iter)
-                self.widDetailsTree.set_value(child_iter, self.DETAIL_PROC_ID,
-                                              child_proc.proc_id)
+        proc_id = self.widProcessesTree.get_value(proc_iter, self.PROC_PROC_ID)
+        # show details of selected process
+        self.showDetails(proc_id)
 
     def openTrace(self, proto_filename: str):
         """
@@ -246,6 +219,93 @@ class UptGui:
             to_be_output.append((proc.children, proc_iter))
         # show all processes
         self.widProcessesView.expand_all()
+
+    def selectProcess(self, proc_id: int):
+        """
+        Select a process.
+        """
+        # get selection
+        proc_sel = self.widProcessesView.get_selection()
+        if proc_sel is None:
+            return
+        # deselect all processes
+        proc_sel.unselect_all()
+        # leave if invalid proc_id
+        if proc_id is None or proc_id < 0:
+            return
+        # select process with proc_id
+        # scroll the process into view
+        def update(proc_store, proc_path, proc_iter, _ctx):
+            if proc_store.get_value(proc_iter, self.PROC_PROC_ID) != proc_id:
+                return
+            proc_sel.select_iter(proc_iter)
+            self.widProcessesView.scroll_to_cell(proc_path)
+
+        self.widProcessesTree.foreach(update, None)
+
+    def showDetails(self, proc_id: int):
+        """
+        Show details of process.
+        """
+        # forget old details
+        self.widDetailsTree.clear()
+        # leave if invalid proc_id
+        # get process
+        if proc_id is None or proc_id < 0:
+            return
+        proc = self.processes.getProcess(proc_id)
+        if proc is None:
+            return
+        # add details of new process
+        def add(key: str, value: str, parent_iter=None):
+            detail_iter = self.widDetailsTree.append(parent_iter)
+            self.widDetailsTree.set_value(detail_iter, self.DETAIL_PROC_ID, -1)
+            self.widDetailsTree.set_value(detail_iter, self.DETAIL_KEY, key)
+            self.widDetailsTree.set_value(detail_iter, self.DETAIL_VALUE,
+                                          value)
+            return detail_iter
+
+        def add_list(key: str, values: list, parent_iter=None):
+            if values is None:
+                return add(key, '???', parent_iter)
+            list_iter = add(key, f'{len(values):d} entries', parent_iter)
+            for i, value in enumerate(values):
+                add(f'{key} {i:d}', value, list_iter)
+            return list_iter
+
+        add('begin time', timestamp2str(proc.begin_timestamp))
+        cmdline_iter = add_list('command line', proc.cmdline)
+        self.widDetailsView.expand_row(
+            self.widDetailsTree.get_path(cmdline_iter), True)
+        add('CPU time', duration2str(proc.cpu_time))
+        add('end time', timestamp2str(proc.end_timestamp))
+        add_list('environment', sorted(proc.environ))
+        add('executable', proc.exe)
+        add('max. resident memory', kb2str(proc.max_rss_kb))
+        add('system CPU time', duration2str(proc.sys_time))
+        add('user CPU time', duration2str(proc.user_time))
+        add('working directory', proc.cwd)
+        # add parent
+        parent_proc = proc.parent
+        if parent_proc is None:
+            add('parent', '???')
+        else:
+            parent_iter = add('parent', cmdline2str(parent_proc.cmdline))
+            self.widDetailsTree.set_value(parent_iter, self.DETAIL_PROC_ID,
+                                          parent_proc.proc_id)
+        # add children
+        child_procs = proc.children
+        if child_procs is None:
+            add('children', '???')
+        else:
+            list_iter = add('children', f'{len(child_procs):d} entries')
+            for i, child_proc in enumerate(child_procs):
+                child_iter = add(f'child {i:d}',
+                                 cmdline2str(child_proc.cmdline), list_iter)
+                self.widDetailsTree.set_value(child_iter, self.DETAIL_PROC_ID,
+                                              child_proc.proc_id)
+            self.widDetailsView.expand_row(
+                self.widDetailsTree.get_path(list_iter), True)
 
 
 def main(argv):

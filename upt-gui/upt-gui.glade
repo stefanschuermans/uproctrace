@@ -182,6 +182,7 @@
                     <property name="search_column">0</property>
                     <property name="fixed_height_mode">True</property>
                     <property name="enable_tree_lines">True</property>
+                    <signal name="row-activated" handler="onDetailsRowActivated" swapped="no"/>
                     <child internal-child="selection">
                       <object class="GtkTreeSelection"/>
                     </child>
