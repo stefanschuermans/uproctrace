@@ -40,7 +40,10 @@ char *uptev_symlink_read(char const *pathname, uptev_cleaner_t *cleaner) {
   if (!target) {
     return NULL;
   }
-  /* success: add malloc-ed object to cleaner and return target string */
-  uptev_cleaner_add_ptr(cleaner, target);
+  /* add malloc-ed object to cleaner */
+  if (uptev_cleaner_add_ptr(cleaner, target) != 0) {
+    return NULL;
+  }
+  /* success, return target string */
   return target;
 }

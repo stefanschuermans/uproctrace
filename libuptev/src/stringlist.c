@@ -52,9 +52,15 @@ int uptev_stringlist_read(char const *pathname, size_t *n, char ***strs,
     free(data);
     return -1;
   }
-  /* success: add malloc-ed object to cleaner and return string array */
-  uptev_cleaner_add_ptr(cleaner, data);
-  uptev_cleaner_add_ptr(cleaner, ptrs);
+  /* add malloc-ed object to cleaner */
+  if (uptev_cleaner_add_ptr(cleaner, data) != 0) {
+    free(ptrs);
+    return -1;
+  }
+  if (uptev_cleaner_add_ptr(cleaner, ptrs) != 0) {
+    return -1;
+  }
+  /* success: return string array */
   *n = cnt;
   *strs = ptrs;
   return 0;
