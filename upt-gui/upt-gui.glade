@@ -2,6 +2,14 @@
 <!-- Generated with glade 3.22.1 -->
 <interface>
   <requires lib="gtk+" version="3.20"/>
+  <object class="GtkTreeStore" id="DetailsTree">
+    <columns>
+      <!-- column-name key -->
+      <column type="gchararray"/>
+      <!-- column-name value -->
+      <column type="gchararray"/>
+    </columns>
+  </object>
   <object class="GtkTreeStore" id="ProcessesTree">
     <columns>
       <!-- column-name proc_id -->
@@ -42,16 +50,16 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="model">ProcessesTree</property>
-                    <property name="reorderable">True</property>
                     <property name="rules_hint">True</property>
                     <property name="search_column">0</property>
                     <property name="fixed_height_mode">True</property>
                     <property name="enable_tree_lines">True</property>
+                    <signal name="cursor-changed" handler="onProcessesCursorChanged" swapped="no"/>
                     <child internal-child="selection">
                       <object class="GtkTreeSelection"/>
                     </child>
                     <child>
-                      <object class="GtkTreeViewColumn" id="Begin">
+                      <object class="GtkTreeViewColumn" id="ProcessesBeginCol">
                         <property name="resizable">True</property>
                         <property name="sizing">fixed</property>
                         <property name="title" translatable="yes">Begin</property>
@@ -60,7 +68,7 @@
                         <property name="sort_indicator">True</property>
                         <property name="sort_column_id">0</property>
                         <child>
-                          <object class="GtkCellRendererText" id="BeginText"/>
+                          <object class="GtkCellRendererText" id="ProcessesBeginText"/>
                           <attributes>
                             <attribute name="text">1</attribute>
                           </attributes>
@@ -68,7 +76,7 @@
                       </object>
                     </child>
                     <child>
-                      <object class="GtkTreeViewColumn" id="End">
+                      <object class="GtkTreeViewColumn" id="ProcessesEndCol">
                         <property name="resizable">True</property>
                         <property name="sizing">fixed</property>
                         <property name="title" translatable="yes">End</property>
@@ -77,7 +85,7 @@
                         <property name="sort_indicator">True</property>
                         <property name="sort_column_id">1</property>
                         <child>
-                          <object class="GtkCellRendererText" id="EndText"/>
+                          <object class="GtkCellRendererText" id="ProcessesEndText"/>
                           <attributes>
                             <attribute name="text">2</attribute>
                           </attributes>
@@ -85,7 +93,7 @@
                       </object>
                     </child>
                     <child>
-                      <object class="GtkTreeViewColumn" id="Command">
+                      <object class="GtkTreeViewColumn" id="ProcessesCommandCol">
                         <property name="resizable">True</property>
                         <property name="sizing">fixed</property>
                         <property name="title" translatable="yes">Command</property>
@@ -94,7 +102,7 @@
                         <property name="sort_indicator">True</property>
                         <property name="sort_column_id">2</property>
                         <child>
-                          <object class="GtkCellRendererText" id="CommandText"/>
+                          <object class="GtkCellRendererText" id="ProcessesCommandText"/>
                           <attributes>
                             <attribute name="text">3</attribute>
                           </attributes>
@@ -111,7 +119,66 @@
               </packing>
             </child>
             <child>
-              <placeholder/>
+              <object class="GtkScrolledWindow" id="DetailsScroll">
+                <property name="width_request">256</property>
+                <property name="height_request">256</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="shadow_type">in</property>
+                <child>
+                  <object class="GtkTreeView" id="DetailsView">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="model">DetailsTree</property>
+                    <property name="rules_hint">True</property>
+                    <property name="search_column">0</property>
+                    <property name="fixed_height_mode">True</property>
+                    <property name="enable_tree_lines">True</property>
+                    <child internal-child="selection">
+                      <object class="GtkTreeSelection"/>
+                    </child>
+                    <child>
+                      <object class="GtkTreeViewColumn" id="DetailsKeyCol">
+                        <property name="resizable">True</property>
+                        <property name="sizing">fixed</property>
+                        <property name="title" translatable="yes">Key</property>
+                        <property name="clickable">True</property>
+                        <property name="reorderable">True</property>
+                        <property name="sort_indicator">True</property>
+                        <property name="sort_column_id">0</property>
+                        <child>
+                          <object class="GtkCellRendererText" id="DetailsKeyText"/>
+                          <attributes>
+                            <attribute name="text">0</attribute>
+                          </attributes>
+                        </child>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkTreeViewColumn" id="DetailsValueCol">
+                        <property name="resizable">True</property>
+                        <property name="sizing">fixed</property>
+                        <property name="title" translatable="yes">Value</property>
+                        <property name="clickable">True</property>
+                        <property name="reorderable">True</property>
+                        <property name="sort_indicator">True</property>
+                        <property name="sort_column_id">1</property>
+                        <child>
+                          <object class="GtkCellRendererText" id="DetailsValueText"/>
+                          <attributes>
+                            <attribute name="text">1</attribute>
+                          </attributes>
+                        </child>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+                <property name="position">1</property>
+              </packing>
             </child>
           </object>
           <packing>
