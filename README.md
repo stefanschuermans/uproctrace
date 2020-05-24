@@ -18,14 +18,20 @@ is de-initiazlied).
 
 UProcTrace is developed on Debian Linux 10 "buster".
 
-Install the prerequisites:
+Install the dependencies:
 
 ```
 apt-get install -y build-essential cmake gcc \
-                   libprotobuf-c-dev libprotobuf-dev
+                   libprotobuf-c-dev libprotobuf-dev \
                    ninja-build \
                    protobuf-c-compiler protobuf-compiler \
                    pylint3 python3 python3-protobuf
+```
+
+For the graphical user interface, install the additional dependencies:
+
+```
+apt-get install -y glade libglib2.0-dev libgtk-3-dev python3-gi
 ```
 
 Change to the directory of this `REAMDE.md` file.
@@ -70,7 +76,14 @@ upt-trace mytrace.proto /usr/bin/printf "trace me"
 
 To show the recorded events, run:
 ```
-upt-dump mytrace.proto
+upt-tool mytrace.proto dump
+```
+
+## Graphical User interface
+
+To explore a trace in the graphical user interface, run:
+```
+<build dir>/upt-gui/upt-gui.py mytrace.proto
 ```
 
 ## Example: Trace Build Process
@@ -82,6 +95,7 @@ this purpose.
 Change to the build directory.
 
 Start a new shell to be traced:
+
 ```
 upt-trace mytrace.proto bash
 ```
@@ -102,7 +116,13 @@ exit
 ```
 
 Show traced information:
+
 ```
-upt-dump mytrace.proto
+upt-tool mytrace.proto dump
 ```
 
+To explore the trace in the graphical user interface, run:
+
+```
+<build dir>/upt-gui/upt-gui.py mytrace.proto
+```
