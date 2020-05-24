@@ -95,8 +95,9 @@ def timestamp2str(timestamp: float) -> str:
 
 class UptGui:
 
-    DETAIL_KEY = 0
-    DETAIL_VALUE = 1
+    DETAIL_PROC_ID = 0
+    DETAIL_KEY = 1
+    DETAIL_VALUE = 2
     PROC_PROC_ID = 0
     PROC_BEGIN = 1
     PROC_END = 2
@@ -149,14 +150,14 @@ class UptGui:
         if proc is None:
             return
         # add details of new process
-        def add(key: str, value: str, parent_iter = None):
+        def add(key: str, value: str, parent_iter=None):
             detail_iter = self.widDetailsTree.append(parent_iter)
             self.widDetailsTree.set_value(detail_iter, self.DETAIL_KEY, key)
             self.widDetailsTree.set_value(detail_iter, self.DETAIL_VALUE,
                                           value)
             return detail_iter
 
-        def add_list(key: str, values: list, parent_iter = None):
+        def add_list(key: str, values: list, parent_iter=None):
             if values is None:
                 return add(key, '???', parent_iter)
             list_iter = add(key, f'{len(values):d} entries', parent_iter)
@@ -173,7 +174,25 @@ class UptGui:
         add('system CPU time', duration2str(proc.sys_time))
         add('user CPU time', duration2str(proc.user_time))
         add('working directory', proc.cwd)
-        # TODO
+        # add parent
+        parent_proc = proc.parent
+        if parent_proc is None:
+            add('parent', '???')
+        else:
+            parent_iter = add('parent', cmdline2str(parent_proc.cmdline))
+            self.widDetailsTree.set_value(parent_iter, self.DETAIL_PROC_ID,
+                                          parent_proc.proc_id)
+        # add children
+        child_procs = proc.children
+        if child_procs is None:
+            add('children', '???')
+        else:
+            list_iter = add('children', f'{len(child_procs):d} entries')
+            for i, child_proc in enumerate(child_procs):
+                child_iter = add(f'child {i:d}',
+                                 cmdline2str(child_proc.cmdline), list_iter)
+                self.widDetailsTree.set_value(child_iter, self.DETAIL_PROC_ID,
+                                              child_proc.proc_id)
 
     def openTrace(self, proto_filename: str):
         """
