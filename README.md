@@ -83,7 +83,7 @@ upt-tool mytrace.proto dump
 
 To explore a trace in the graphical user interface, run:
 ```
-<build dir>/upt-gui/upt-gui.py mytrace.proto
+upt-tool mytrace.proto gui
 ```
 
 ## Example: Trace Build Process
@@ -124,5 +124,5 @@ upt-tool mytrace.proto dump
 To explore the trace in the graphical user interface, run:
 
 ```
-<build dir>/upt-gui/upt-gui.py mytrace.proto
+upt-tool mytrace.proto gui
 ```

@@ -1,14 +1,18 @@
-#! /usr/bin/env python3
+"""
+Graphical user interface of UProcTrace.
+"""
 
-import gi
-import os
 import shlex
-import sys
 import time
-gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk
 
+import uproctrace.gui_glade
 import uproctrace.processes
+
+# pylint: disable=C0411
+import gi
+gi.require_version('Gtk', '3.0')
+# pylint: disable=C0413
+from gi.repository import Gtk
 
 
 def cmdline2str(cmdline: list) -> str:
@@ -27,47 +31,47 @@ def duration2str(duration: float) -> str:
     if duration is None:
         return '???'
     # split into day, hours, minutes, seconds
-    s = int(duration)
-    m = s // 60
-    s = s % 60
-    h = m // 60
-    m = m % 60
-    d = h // 24
-    h = h % 24
+    dur_s = int(duration)
+    dur_m = dur_s // 60
+    dur_s = dur_s % 60
+    dur_h = dur_m // 60
+    dur_m = dur_m % 60
+    dur_d = dur_h // 24
+    dur_h = dur_h % 24
     # split into ms, us, ns
-    ns = int((duration - s) * 1e9)
-    us = ns // 1000
-    ns = ns % 1000
-    ms = us // 1000
-    us = us % 1000
+    dur_ns = int((duration - dur_s) * 1e9)
+    dur_us = dur_ns // 1000
+    dur_ns = dur_ns % 1000
+    dur_ms = dur_us // 1000
+    dur_us = dur_us % 1000
     # assemble text
     txt = ''
-    if d > 0:
-        txt += f'{d:d} d '
-    if h > 0 or txt:
-        txt += f'{h:d} h '
-    if m > 0 or txt:
-        txt += f'{m:d} m '
-    if s > 0 or txt:
-        txt += f'{s:d} s '
-    if ms > 0 or txt:
-        txt += f'{ms:d} ms '
-    if us > 0 or txt:
-        txt += f'{us:d} us '
-    txt += f'{ns:d} ns '
+    if dur_d > 0:
+        txt += f'{dur_d:d} d '
+    if dur_h > 0 or txt:
+        txt += f'{dur_h:d} h '
+    if dur_m > 0 or txt:
+        txt += f'{dur_m:d} m '
+    if dur_s > 0 or txt:
+        txt += f'{dur_s:d} s '
+    if dur_ms > 0 or txt:
+        txt += f'{dur_ms:d} ms '
+    if dur_us > 0 or txt:
+        txt += f'{dur_us:d} us '
+    txt += f'{dur_ns:d} ns '
     txt += f'({duration:f} s)'
     return txt
 
 
-def kb2str(kb: int) -> str:
+def kb2str(size_kb: int) -> str:
     """
     Convert size in KiB to string.
     """
-    if kb is None:
+    if size_kb is None:
         return '???'
     # split into GiB, MiB, KiB
-    mib = kb // 1024
-    kib = kb % 1024
+    mib = size_kb // 1024
+    kib = size_kb % 1024
     gib = mib // 1024
     mib = mib % 1024
     # assemble text
@@ -77,7 +81,7 @@ def kb2str(kb: int) -> str:
     if mib > 0 or txt:
         txt += f'{mib:d} MiB '
     txt += f'{kib:d} KiB '
-    txt += f'({kb:d} KiB)'
+    txt += f'({size_kb:d} KiB)'
     return txt
 
 
@@ -94,6 +98,9 @@ def timestamp2str(timestamp: float) -> str:
 
 
 class UptGui:
+    """
+    Graphical user interface of UProcTrace.
+    """
 
     DETAIL_PROC_ID = 0
     DETAIL_KEY = 1
@@ -114,12 +121,11 @@ class UptGui:
         Construct the GUI.
         """
         self.builder = Gtk.Builder()
-        script_dir = os.path.dirname(os.path.abspath(__file__))
-        self.builder.add_from_file(os.path.join(script_dir, 'upt-gui.glade'))
-        self.widDetailsTree = self.builder.get_object('DetailsTree')
-        self.widDetailsView = self.builder.get_object('DetailsView')
-        self.widProcessesTree = self.builder.get_object('ProcessesTree')
-        self.widProcessesView = self.builder.get_object('ProcessesView')
+        self.builder.add_from_string(uproctrace.gui_glade.DATA)
+        self.wid_details_tree = self.builder.get_object('DetailsTree')
+        self.wid_details_view = self.builder.get_object('DetailsView')
+        self.wid_processes_tree = self.builder.get_object('ProcessesTree')
+        self.wid_processes_view = self.builder.get_object('ProcessesView')
         handlers = {
             'onDestroy': self.onDestroy,
             'onDetailsRowActivated': self.onDetailsRowActivated,
@@ -129,25 +135,25 @@ class UptGui:
         # open trace file
         self.openTrace(proto_filename)
 
-    def onDestroy(self, widget):
+    def onDestroy(self, _widget):
         """
         Window will be destroyed.
         """
         Gtk.main_quit()
 
-    def onDetailsRowActivated(self, widget, row, col):
+    def onDetailsRowActivated(self, _widget, _row, _col):
         """
         Row in details view has been activated.
         """
         # get proc_id of selected row (if any)
-        detail_sel = self.widDetailsView.get_selection()
+        detail_sel = self.wid_details_view.get_selection()
         if detail_sel is None:
             return
         detail_iter = detail_sel.get_selected()[1]
         if detail_iter is None:
             return
-        proc_id = self.widDetailsTree.get_value(detail_iter,
-                                                self.DETAIL_PROC_ID)
+        proc_id = self.wid_details_tree.get_value(detail_iter,
+                                                  self.DETAIL_PROC_ID)
         # do nothing for rows without valid proc_id
         if proc_id < 0:
             return
@@ -156,12 +162,12 @@ class UptGui:
         # show details of selected process
         self.showDetails(proc_id)
 
-    def onProcessesCursorChanged(self, widget):
+    def onProcessesCursorChanged(self, _widget):
         """
         Cursor changed in processes tree view.
         """
         # get proc_id of selected process
-        proc_sel = self.widProcessesView.get_selection()
+        proc_sel = self.wid_processes_view.get_selection()
         if proc_sel is None:
             self.showDetails(None)
             return
@@ -169,7 +175,8 @@ class UptGui:
         if proc_iter is None:
             self.showDetails(None)
             return
-        proc_id = self.widProcessesTree.get_value(proc_iter, self.PROC_PROC_ID)
+        proc_id = self.wid_processes_tree.get_value(proc_iter,
+                                                    self.PROC_PROC_ID)
         # show details of selected process
         self.showDetails(proc_id)
 
@@ -178,7 +185,7 @@ class UptGui:
         Open a trace file.
         """
         # forget old processes
-        self.widProcessesTree.clear()
+        self.wid_processes_tree.clear()
         # lead new data
         with open(proto_filename, 'rb') as proto_file:
             self.processes = uproctrace.processes.Processes(proto_file)
@@ -191,41 +198,43 @@ class UptGui:
                 continue
             proc = procs[0]
             del procs[0]
-            proc_iter = self.widProcessesTree.append(parent_iter)
-            self.widProcessesTree.set_value(proc_iter, self.PROC_PROC_ID,
-                                            proc.proc_id)
-            self.widProcessesTree.set_value(proc_iter,
-                                            self.PROC_BEGIN_TIMESTAMP,
-                                            proc.begin_timestamp)
-            self.widProcessesTree.set_value(
+            proc_iter = self.wid_processes_tree.append(parent_iter)
+            self.wid_processes_tree.set_value(proc_iter, self.PROC_PROC_ID,
+                                              proc.proc_id)
+            self.wid_processes_tree.set_value(proc_iter,
+                                              self.PROC_BEGIN_TIMESTAMP,
+                                              proc.begin_timestamp)
+            self.wid_processes_tree.set_value(
                 proc_iter, self.PROC_BEGIN_TIMESTAMP_TEXT,
                 timestamp2str(proc.begin_timestamp))
-            self.widProcessesTree.set_value(proc_iter, self.PROC_END_TIMESTAMP,
-                                            proc.end_timestamp)
-            self.widProcessesTree.set_value(proc_iter,
-                                            self.PROC_END_TIMESTAMP_TEXT,
-                                            timestamp2str(proc.end_timestamp))
-            self.widProcessesTree.set_value(proc_iter, self.PROC_CMDLINE,
-                                            cmdline2str(proc.cmdline))
-            self.widProcessesTree.set_value(proc_iter, self.PROC_CPU_TIME,
-                                            proc.cpu_time)
-            self.widProcessesTree.set_value(proc_iter, self.PROC_CPU_TIME_TEXT,
-                                            duration2str(proc.cpu_time))
-            self.widProcessesTree.set_value(proc_iter, self.PROC_MAX_RSS_KB,
-                                            proc.max_rss_kb)
-            self.widProcessesTree.set_value(proc_iter,
-                                            self.PROC_MAX_RSS_KB_TEXT,
-                                            kb2str(proc.max_rss_kb))
+            self.wid_processes_tree.set_value(proc_iter,
+                                              self.PROC_END_TIMESTAMP,
+                                              proc.end_timestamp)
+            self.wid_processes_tree.set_value(
+                proc_iter, self.PROC_END_TIMESTAMP_TEXT,
+                timestamp2str(proc.end_timestamp))
+            self.wid_processes_tree.set_value(proc_iter, self.PROC_CMDLINE,
+                                              cmdline2str(proc.cmdline))
+            self.wid_processes_tree.set_value(proc_iter, self.PROC_CPU_TIME,
+                                              proc.cpu_time)
+            self.wid_processes_tree.set_value(proc_iter,
+                                              self.PROC_CPU_TIME_TEXT,
+                                              duration2str(proc.cpu_time))
+            self.wid_processes_tree.set_value(proc_iter, self.PROC_MAX_RSS_KB,
+                                              proc.max_rss_kb)
+            self.wid_processes_tree.set_value(proc_iter,
+                                              self.PROC_MAX_RSS_KB_TEXT,
+                                              kb2str(proc.max_rss_kb))
             to_be_output.append((proc.children, proc_iter))
         # show all processes
-        self.widProcessesView.expand_all()
+        self.wid_processes_view.expand_all()
 
     def selectProcess(self, proc_id: int):
         """
         Select a process.
         """
         # get selection
-        proc_sel = self.widProcessesView.get_selection()
+        proc_sel = self.wid_processes_view.get_selection()
         if proc_sel is None:
             return
         # deselect all processes
@@ -239,16 +248,16 @@ class UptGui:
             if proc_store.get_value(proc_iter, self.PROC_PROC_ID) != proc_id:
                 return
             proc_sel.select_iter(proc_iter)
-            self.widProcessesView.scroll_to_cell(proc_path)
+            self.wid_processes_view.scroll_to_cell(proc_path)
 
-        self.widProcessesTree.foreach(update, None)
+        self.wid_processes_tree.foreach(update, None)
 
     def showDetails(self, proc_id: int):
         """
         Show details of process.
         """
         # forget old details
-        self.widDetailsTree.clear()
+        self.wid_details_tree.clear()
         # leave if invalid proc_id
         # get process
         if proc_id is None or proc_id < 0:
@@ -258,11 +267,12 @@ class UptGui:
             return
         # add details of new process
         def add(key: str, value: str, parent_iter=None):
-            detail_iter = self.widDetailsTree.append(parent_iter)
-            self.widDetailsTree.set_value(detail_iter, self.DETAIL_PROC_ID, -1)
-            self.widDetailsTree.set_value(detail_iter, self.DETAIL_KEY, key)
-            self.widDetailsTree.set_value(detail_iter, self.DETAIL_VALUE,
-                                          value)
+            detail_iter = self.wid_details_tree.append(parent_iter)
+            self.wid_details_tree.set_value(detail_iter, self.DETAIL_PROC_ID,
+                                            -1)
+            self.wid_details_tree.set_value(detail_iter, self.DETAIL_KEY, key)
+            self.wid_details_tree.set_value(detail_iter, self.DETAIL_VALUE,
+                                            value)
             return detail_iter
 
         def add_list(key: str, values: list, parent_iter=None):
@@ -275,8 +285,8 @@ class UptGui:
 
         add('begin time', timestamp2str(proc.begin_timestamp))
         cmdline_iter = add_list('command line', proc.cmdline)
-        self.widDetailsView.expand_row(
-            self.widDetailsTree.get_path(cmdline_iter), True)
+        self.wid_details_view.expand_row(
+            self.wid_details_tree.get_path(cmdline_iter), True)
         add('CPU time', duration2str(proc.cpu_time))
         add('end time', timestamp2str(proc.end_timestamp))
         add_list('environment', sorted(proc.environ))
@@ -291,8 +301,8 @@ class UptGui:
             add('parent', '???')
         else:
             parent_iter = add('parent', cmdline2str(parent_proc.cmdline))
-            self.widDetailsTree.set_value(parent_iter, self.DETAIL_PROC_ID,
-                                          parent_proc.proc_id)
+            self.wid_details_tree.set_value(parent_iter, self.DETAIL_PROC_ID,
+                                            parent_proc.proc_id)
         # add children
         child_procs = proc.children
         if child_procs is None:
@@ -302,27 +312,21 @@ class UptGui:
             for i, child_proc in enumerate(child_procs):
                 child_iter = add(f'child {i:d}',
                                  cmdline2str(child_proc.cmdline), list_iter)
-                self.widDetailsTree.set_value(child_iter, self.DETAIL_PROC_ID,
-                                              child_proc.proc_id)
-            self.widDetailsView.expand_row(
-                self.widDetailsTree.get_path(list_iter), True)
+                self.wid_details_tree.set_value(child_iter,
+                                                self.DETAIL_PROC_ID,
+                                                child_proc.proc_id)
+            self.wid_details_view.expand_row(
+                self.wid_details_tree.get_path(list_iter), True)
 
 
-def main(argv):
+def run(proto_filename):
     """
-    Main program.
+    Run the graphical user interface for the specified trace file.
     """
-    if len(argv) < 2:
-        print('usage: ' + argv[0] + ' <trace.proto>', file=sys.stderr)
-        return 2
-    proto_filename = argv[1]
     app = UptGui(proto_filename)
     try:
         Gtk.main()
     except KeyboardInterrupt:
         pass
-    return 0
-
-
-if __name__ == '__main__':
-    sys.exit(main(sys.argv))
+    finally:
+        del app

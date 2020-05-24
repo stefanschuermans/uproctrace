@@ -6,23 +6,30 @@ import argparse
 import shlex
 import sys
 
-import uproctrace.dump
-import uproctrace.processes
-
 
 def dump(args):
     """
     Dump all events in trace file to standard output.
     """
+    import uproctrace.dump
     with open(args.trace, 'rb') as proto_file:
         while uproctrace.dump.dump_event(proto_file, sys.stdout):
             pass
+
+
+def gui(args):
+    """
+    Run the graphical user interface.
+    """
+    import uproctrace.gui
+    uproctrace.gui.run(args.trace)
 
 
 def pstree(args):
     """
     Print process tree.
     """
+    import uproctrace.processes
     with open(args.trace, 'rb') as proto_file:
         processes = uproctrace.processes.Processes(proto_file)
     # tree output (iterative)
@@ -55,6 +62,10 @@ def parse_args():
     # dump
     dump_parser = subparsers.add_parser('dump', help='Dump events to stdout.')
     dump_parser.set_defaults(func=dump)
+    # gui
+    gui_parser = subparsers.add_parser('gui',
+                                       help='Run graphical user interface.')
+    gui_parser.set_defaults(func=gui)
     # pstree
     pstree_parser = subparsers.add_parser('pstree', help='Print process tree.')
     pstree_parser.set_defaults(func=pstree)
