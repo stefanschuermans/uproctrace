@@ -17,14 +17,22 @@
       <!-- column-name proc_id -->
       <column type="gint"/>
       <!-- column-name begin_timestamp -->
+      <column type="gdouble"/>
+      <!-- column-name begin_timestamp_text -->
       <column type="gchararray"/>
       <!-- column-name end_timestamp -->
+      <column type="gdouble"/>
+      <!-- column-name end_timestamp_text -->
       <column type="gchararray"/>
       <!-- column-name cmdline -->
       <column type="gchararray"/>
       <!-- column-name cpu_time -->
+      <column type="gdouble"/>
+      <!-- column-name cpu_time_text -->
       <column type="gchararray"/>
       <!-- column-name max_rss_kb -->
+      <column type="gint"/>
+      <!-- column-name max_rss_kb_text -->
       <column type="gchararray"/>
     </columns>
   </object>
@@ -76,7 +84,7 @@
                         <child>
                           <object class="GtkCellRendererText" id="ProcessesBeginText"/>
                           <attributes>
-                            <attribute name="text">1</attribute>
+                            <attribute name="text">2</attribute>
                           </attributes>
                         </child>
                       </object>
@@ -89,11 +97,11 @@
                         <property name="clickable">True</property>
                         <property name="reorderable">True</property>
                         <property name="sort_indicator">True</property>
-                        <property name="sort_column_id">2</property>
+                        <property name="sort_column_id">3</property>
                         <child>
                           <object class="GtkCellRendererText" id="ProcessesEndText"/>
                           <attributes>
-                            <attribute name="text">2</attribute>
+                            <attribute name="text">4</attribute>
                           </attributes>
                         </child>
                       </object>
@@ -106,11 +114,11 @@
                         <property name="clickable">True</property>
                         <property name="reorderable">True</property>
                         <property name="sort_indicator">True</property>
-                        <property name="sort_column_id">3</property>
+                        <property name="sort_column_id">5</property>
                         <child>
                           <object class="GtkCellRendererText" id="ProcessesCommandText"/>
                           <attributes>
-                            <attribute name="text">3</attribute>
+                            <attribute name="text">5</attribute>
                           </attributes>
                         </child>
                       </object>
@@ -123,11 +131,11 @@
                         <property name="clickable">True</property>
                         <property name="reorderable">True</property>
                         <property name="sort_indicator">True</property>
-                        <property name="sort_column_id">4</property>
+                        <property name="sort_column_id">6</property>
                         <child>
                           <object class="GtkCellRendererText" id="ProcessesCpuTimeText"/>
                           <attributes>
-                            <attribute name="text">4</attribute>
+                            <attribute name="text">7</attribute>
                           </attributes>
                         </child>
                       </object>
@@ -140,11 +148,11 @@
                         <property name="clickable">True</property>
                         <property name="reorderable">True</property>
                         <property name="sort_indicator">True</property>
-                        <property name="sort_column_id">5</property>
+                        <property name="sort_column_id">8</property>
                         <child>
                           <object class="GtkCellRendererText" id="ProcessesMemoryText"/>
                           <attributes>
-                            <attribute name="text">5</attribute>
+                            <attribute name="text">9</attribute>
                           </attributes>
                         </child>
                       </object>

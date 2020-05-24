@@ -99,11 +99,15 @@ class UptGui:
     DETAIL_KEY = 1
     DETAIL_VALUE = 2
     PROC_PROC_ID = 0
-    PROC_BEGIN = 1
-    PROC_END = 2
-    PROC_CMDLINE = 3
-    PROC_CPU_TIME = 4
-    PROC_MAX_RSS_KB = 5
+    PROC_BEGIN_TIMESTAMP = 1
+    PROC_BEGIN_TIMESTAMP_TEXT = 2
+    PROC_END_TIMESTAMP = 3
+    PROC_END_TIMESTAMP_TEXT = 4
+    PROC_CMDLINE = 5
+    PROC_CPU_TIME = 6
+    PROC_CPU_TIME_TEXT = 7
+    PROC_MAX_RSS_KB = 8
+    PROC_MAX_RSS_KB_TEXT = 9
 
     def __init__(self, proto_filename):
         """
@@ -217,16 +221,27 @@ class UptGui:
             proc_iter = self.widProcessesTree.append(parent_iter)
             self.widProcessesTree.set_value(proc_iter, self.PROC_PROC_ID,
                                             proc.proc_id)
+            self.widProcessesTree.set_value(proc_iter,
+                                            self.PROC_BEGIN_TIMESTAMP,
+                                            proc.begin_timestamp)
             self.widProcessesTree.set_value(
-                proc_iter, self.PROC_BEGIN,
+                proc_iter, self.PROC_BEGIN_TIMESTAMP_TEXT,
                 timestamp2str(proc.begin_timestamp))
-            self.widProcessesTree.set_value(proc_iter, self.PROC_END,
+            self.widProcessesTree.set_value(proc_iter, self.PROC_END_TIMESTAMP,
+                                            proc.end_timestamp)
+            self.widProcessesTree.set_value(proc_iter,
+                                            self.PROC_END_TIMESTAMP_TEXT,
                                             timestamp2str(proc.end_timestamp))
             self.widProcessesTree.set_value(proc_iter, self.PROC_CMDLINE,
                                             cmdline2str(proc.cmdline))
             self.widProcessesTree.set_value(proc_iter, self.PROC_CPU_TIME,
+                                            proc.cpu_time)
+            self.widProcessesTree.set_value(proc_iter, self.PROC_CPU_TIME_TEXT,
                                             duration2str(proc.cpu_time))
             self.widProcessesTree.set_value(proc_iter, self.PROC_MAX_RSS_KB,
+                                            proc.max_rss_kb)
+            self.widProcessesTree.set_value(proc_iter,
+                                            self.PROC_MAX_RSS_KB_TEXT,
                                             kb2str(proc.max_rss_kb))
             to_be_output.append((proc.children, proc_iter))
         # show all processes
