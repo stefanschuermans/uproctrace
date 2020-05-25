@@ -7,7 +7,7 @@ add_custom_command(
   COMMAND
   protoc-c --proto_path ${CMAKE_SOURCE_DIR}
            --c_out ${CMAKE_CURRENT_BINARY_DIR}/src
-           uproctrace.proto
+           ${CMAKE_SOURCE_DIR}/uproctrace.proto
 )
 
 add_library(

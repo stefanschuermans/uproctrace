@@ -6,7 +6,7 @@ add_custom_command(
   COMMAND
   protoc --proto_path ${CMAKE_SOURCE_DIR}
          --python_out ${CMAKE_CURRENT_BINARY_DIR}
-         uproctrace.proto
+         ${CMAKE_SOURCE_DIR}/uproctrace.proto
 )
 
 add_custom_command(
