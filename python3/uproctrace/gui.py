@@ -249,6 +249,10 @@ class UptGui:
         # select process with proc_id
         # scroll the process into view
         def update(proc_store, proc_path, proc_iter, _ctx):
+            """
+            Called for every item in tree.
+            If item matches proc_id, select it and scroll it into view.
+            """
             if proc_store.get_value(proc_iter, self.PROC_PROC_ID) != proc_id:
                 return
             proc_sel.select_iter(proc_iter)
@@ -271,6 +275,11 @@ class UptGui:
             return
         # add details of new process
         def add(key: str, value: str, parent_iter=None):
+            """
+            Add a string detail to a process.
+            Add to specified parent (if parent_iter is specified).
+            Return iterator to added detail.
+            """
             detail_iter = self.wid_details_tree.append(parent_iter)
             self.wid_details_tree.set_value(detail_iter, self.DETAIL_PROC_ID,
                                             -1)
@@ -280,6 +289,11 @@ class UptGui:
             return detail_iter
 
         def add_list(key: str, values: list, parent_iter=None):
+            """
+            Add a list of string details to a process as subtree.
+            Add to specified parent (if parent_iter is specified).
+            Return iterator to added top-level of detail subtree.
+            """
             if values is None:
                 return add(key, '???', parent_iter)
             list_iter = add(key, f'{len(values):d} entries', parent_iter)
