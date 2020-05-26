@@ -42,8 +42,9 @@ void uptpl_write(void const *data, size_t size) {
           (size >> 8) & 0xFF,
           size & 0xFF,
       }};
-  write(fd, &uptpl_event_header, sizeof(uptpl_event_header));
-  write(fd, data, size);
+  ssize_t written = write(fd, &uptpl_event_header, sizeof(uptpl_event_header));
+  written += write(fd, data, size);
+  (void)written; /* if writing failed, nobody there to receive the error */
   flock(fd, LOCK_UN);
   close(fd);
 }
