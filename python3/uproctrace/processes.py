@@ -245,4 +245,5 @@ class Processes(uproctrace.parse.Visitor):
         proc.setEnd(proc_end)
         proc_end.setProcess(proc)
         # remove process from dict of current processes (it ended)
-        self._current_processes[proc_end.pid] = None
+        if proc_end.pid in self._current_processes:
+            del self._current_processes[proc_end.pid]
