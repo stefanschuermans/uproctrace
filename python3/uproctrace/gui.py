@@ -310,6 +310,8 @@ class UptGui:
         add_list('environment', sorted(proc.environ))
         add('executable', proc.exe)
         add('max. resident memory', kb2str(proc.max_rss_kb))
+        add('pid', str(proc.pid))
+        add('ppid', str(proc.ppid))
         add('system CPU time', duration2str(proc.sys_time))
         add('user CPU time', duration2str(proc.user_time))
         add('working directory', proc.cwd)

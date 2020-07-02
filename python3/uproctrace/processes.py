@@ -104,18 +104,38 @@ class Process():
         return self._end.max_rss_kb
 
     @property
-    def proc_id(self):
-        """
-        Process ID. (This is not the PID.)
-        """
-        return self._proc_id
-
-    @property
     def parent(self):
         """
         Parent process (or None).
         """
         return self._parent
+
+    @property
+    def pid(self):
+        """
+        Linux process ID.
+        """
+        if self._begin is not None:
+            return self._begin.pid
+        if self._end is not None:
+            return self._end.pid
+        return None
+
+    @property
+    def ppid(self):
+        """
+        Linux process ID of parent process.
+        """
+        if self._begin is None:
+            return None
+        return self._begin.ppid
+
+    @property
+    def proc_id(self):
+        """
+        Process ID. (This is not the PID.)
+        """
+        return self._proc_id
 
     @property
     def sys_time(self) -> float:
