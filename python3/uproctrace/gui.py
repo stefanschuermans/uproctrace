@@ -1,7 +1,6 @@
 # UProcTrace: User-space Process Tracing
 # Copyright 2020: Stefan Schuermans, Aachen, Germany <stefan@schuermans.info>
 # Copyleft: GNU LESSER GENERAL PUBLIC LICENSE version 3 (see LICENSE)
-
 """
 Graphical user interface of UProcTrace.
 """
@@ -14,9 +13,10 @@ import uproctrace.processes
 
 # pylint: disable=C0411
 import gi
+gi.require_version('Gdk', '3.0')
 gi.require_version('Gtk', '3.0')
 # pylint: disable=C0413
-from gi.repository import Gtk
+from gi.repository import Gdk, Gtk
 
 
 def cmdline2str(cmdline: list) -> str:
@@ -126,6 +126,7 @@ class UptGui:
         """
         self.builder = Gtk.Builder()
         self.builder.add_from_string(uproctrace.gui_glade.DATA)
+        self.clipboard = Gtk.Clipboard.get(Gdk.SELECTION_CLIPBOARD)
         self.wid_details_tree = self.builder.get_object('DetailsTree')
         self.wid_details_view = self.builder.get_object('DetailsView')
         self.wid_processes_tree = self.builder.get_object('ProcessesTree')
@@ -149,16 +150,31 @@ class UptGui:
         """
         Row in details view has been activated.
         """
-        # get proc_id of selected row (if any)
+        # get selected row (if any)
         detail_sel = self.wid_details_view.get_selection()
         if detail_sel is None:
             return
         detail_iter = detail_sel.get_selected()[1]
         if detail_iter is None:
             return
+        # copy string of selected item or subtree to clipboard
+        string = self.wid_details_tree.get_value(detail_iter,
+                                                 self.DETAIL_VALUE)
+        child_iter = self.wid_details_tree.iter_children(detail_iter)
+        if child_iter is not None:
+            # selected row has children, assemble command line from children
+            strings = []
+            while child_iter is not None:
+                strings.append(
+                    self.wid_details_tree.get_value(child_iter,
+                                                    self.DETAIL_VALUE))
+                child_iter = self.wid_details_tree.iter_next(child_iter)
+            string = cmdline2str(strings)
+        self.clipboard.set_text(string, -1)
+        self.clipboard.store()
+        # get proc_id of selected row, nothing else to do if none
         proc_id = self.wid_details_tree.get_value(detail_iter,
                                                   self.DETAIL_PROC_ID)
-        # do nothing for rows without valid proc_id
         if proc_id < 0:
             return
         # select process
