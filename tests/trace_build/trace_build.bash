@@ -14,15 +14,15 @@ SCRIPT_DIR="$(dirname "$0")"
 
 source "$UPT_HOME/exports"
 
-rm -rf out.proto build
+rm -rf trace.upt build
 
-upt-trace out.proto "$SCRIPT_DIR/run_build.bash" "$SOURCE_DIR"
+upt-trace trace.upt "$SCRIPT_DIR/run_build.bash" "$SOURCE_DIR"
 
-ls -l out.proto
+ls -l trace.upt
 
-upt-tool out.proto dump | tee out.dump
+upt-tool trace.upt dump | tee out.dump
 grep -A 1 '^ *cmdline {$' out.dump | grep '^ *s: "mkdir"$'
 grep '^ *s: "proc_begin.c"$' out.dump
 grep '^ *s: "libuptpl.so"$' out.dump
 
-upt-tool out.proto pstree
+upt-tool trace.upt pstree

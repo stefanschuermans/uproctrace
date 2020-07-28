@@ -71,19 +71,19 @@ file name for the trace.  For example, to trace the command
 ```
 run the following command:
 ```
-upt-trace mytrace.proto /usr/bin/printf "trace me"
+upt-trace mytrace.upt /usr/bin/printf "trace me"
 ```
 
 To show the recorded events, run:
 ```
-upt-tool mytrace.proto dump
+upt-tool mytrace.upt dump
 ```
 
 ## Graphical User interface
 
 To explore a trace in the graphical user interface, run:
 ```
-upt-tool mytrace.proto gui
+upt-tool mytrace.upt gui
 ```
 
 ## Example: Trace Build Process
@@ -97,7 +97,7 @@ Change to the build directory.
 Start a new shell to be traced:
 
 ```
-upt-trace mytrace.proto bash
+upt-trace mytrace.upt bash
 ```
 
 Configure another build directory for this tracing example and run the build:
@@ -118,11 +118,11 @@ exit
 Show traced information:
 
 ```
-upt-tool mytrace.proto dump
+upt-tool mytrace.upt dump
 ```
 
 To explore the trace in the graphical user interface, run:
 
 ```
-upt-tool mytrace.proto gui
+upt-tool mytrace.upt gui
 ```

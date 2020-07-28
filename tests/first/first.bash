@@ -13,14 +13,14 @@ SCRIPT_DIR="$(dirname "$0")"
 
 source "$UPT_HOME/exports"
 
-rm -rf out.proto
+rm -rf trace.upt
 
-upt-trace out.proto "$SCRIPT_DIR/traceme.bash"
+upt-trace trace.upt "$SCRIPT_DIR/traceme.bash"
 
-ls -l out.proto
+ls -l trace.upt
 
-upt-tool out.proto dump | tee out.dump
+upt-tool trace.upt dump | tee out.dump
 grep '^ *event *{ *$' out.dump | wc -l | tee out.event_cnt
 grep '^6$' out.event_cnt
 
-upt-tool out.proto pstree
+upt-tool trace.upt pstree

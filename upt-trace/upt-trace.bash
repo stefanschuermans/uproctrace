@@ -2,7 +2,7 @@
 
 if (( $# < 2 ))
 then
-  echo "usage: $0 <upt-trace-file.proto> <command> [<arg> [...]]" >&2
+  echo "usage: $0 <trace.upt> <command> [<arg> [...]]" >&2
   exit 2
 fi
 TRACE_FILE="$1"

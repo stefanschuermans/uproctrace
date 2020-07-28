@@ -61,7 +61,7 @@ def parse_args():
     """
     # set up main parser
     parser = argparse.ArgumentParser(description='UProcTrace tool.')
-    parser.add_argument('trace', help='trace file')
+    parser.add_argument('trace', metavar='<trace.upt>', help='trace file')
     subparsers = parser.add_subparsers()
     # dump
     dump_parser = subparsers.add_parser('dump', help='Dump events to stdout.')
