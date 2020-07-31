@@ -12,6 +12,6 @@ UPT_HOME="$(readlink -f "$(dirname "$(dirname "$0")")")"
 
 touch "$TRACE_FILE"
 export UPTPL_OUTPUT="$(readlink -f "$TRACE_FILE")"
-export LD_PRELOAD="$UPT_HOME/libuptpl/libuptpl.so"
+export LD_PRELOAD="$UPT_HOME/lib/uproctrace/libuptpl.so"
 
 exec "$@"
