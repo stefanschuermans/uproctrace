@@ -25,3 +25,17 @@ add_custom_target(
   ${CMAKE_BINARY_DIR}/lib/uproctrace/upt-tool.py
   ${CMAKE_BINARY_DIR}/bin/upt-tool
 )
+
+install(
+  PROGRAMS
+  ${CMAKE_BINARY_DIR}/lib/uproctrace/upt-tool.py
+  DESTINATION
+  lib/uproctrace
+)
+
+install(
+  PROGRAMS
+  ${CMAKE_BINARY_DIR}/bin/upt-tool
+  DESTINATION
+  bin
+)

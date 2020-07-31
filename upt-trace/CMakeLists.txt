@@ -14,3 +14,10 @@ add_custom_target(
   DEPENDS
   ${CMAKE_BINARY_DIR}/bin/upt-trace
 )
+
+install(
+  PROGRAMS
+  ${CMAKE_BINARY_DIR}/bin/upt-trace
+  DESTINATION
+  bin
+)

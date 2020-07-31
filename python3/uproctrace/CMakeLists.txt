@@ -2,6 +2,10 @@ set(
   PYTHON_UPT_DIR
   ${CMAKE_BINARY_DIR}/lib/python3/dist-packages/uproctrace
 )
+set(
+  PYTHON_UPT_INSTALL_DIR
+  lib/python3/dist-packages/uproctrace
+)
 
 add_custom_command(
   OUTPUT
@@ -12,6 +16,12 @@ add_custom_command(
   protoc --proto_path ${CMAKE_SOURCE_DIR}
          --python_out ${PYTHON_UPT_DIR}
          ${CMAKE_SOURCE_DIR}/uproctrace.proto
+)
+install(
+  FILES
+  ${PYTHON_UPT_DIR}/uproctrace_pb2.py
+  DESTINATION
+  ${PYTHON_UPT_INSTALL_DIR}
 )
 
 add_custom_command(
@@ -28,6 +38,12 @@ add_custom_command(
   ${CMAKE_CURRENT_SOURCE_DIR}/gui_glade_footer.py
   > ${PYTHON_UPT_DIR}/gui_glade.py
 )
+install(
+  FILES
+  ${PYTHON_UPT_DIR}/gui_glade.py
+  DESTINATION
+  ${PYTHON_UPT_INSTALL_DIR}
+)
 
 function(pyfile NAME)
   add_custom_command(
@@ -41,6 +57,12 @@ function(pyfile NAME)
   )
   list(APPEND PYFILES ${PYTHON_UPT_DIR}/${NAME}.py)
   set(PYFILES ${PYFILES} PARENT_SCOPE)
+  install(
+    FILES
+    ${PYTHON_UPT_DIR}/${NAME}.py
+    DESTINATION
+    ${PYTHON_UPT_INSTALL_DIR}
+  )
 endfunction(pyfile)
 
 pyfile(__init__)

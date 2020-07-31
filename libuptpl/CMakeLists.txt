@@ -15,3 +15,10 @@ set_target_properties(
   LIBRARY_OUTPUT_DIRECTORY
   ${CMAKE_BINARY_DIR}/lib/uproctrace
 )
+
+install(
+  PROGRAMS
+  ${CMAKE_BINARY_DIR}/lib/uproctrace/libuptpl.so
+  DESTINATION
+  lib/uproctrace
+)
