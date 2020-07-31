@@ -5,4 +5,3 @@ then
 fi
 export UPT_HOME="$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")"
 export PATH="$UPT_HOME/bin${PATH:+:${PATH}}"
-export PYTHONPATH="$UPT_HOME/python3${PYTHONPATH:+:${PYTHONPATH}}"
