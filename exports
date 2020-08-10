@@ -1,7 +1,11 @@
-if [[ -z ${BASH_SOURCE[0]:-} ]]
+if [[ -v BASH_VERSION ]]
 then
-  echo "BASH_SOURCE is not set, unsupported shell" >&2
+  export UPT_HOME="$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")"
+elif [[ -v ZSH_VERSION ]]
+then
+  export UPT_HOME="$(readlink -f "$(dirname "${(%):-%x}")")"
+else
+  echo "Unsupported shell, only bash and zsh are supported." >&2
   return 2
 fi
-export UPT_HOME="$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")"
 export PATH="$UPT_HOME/bin${PATH:+:${PATH}}"
