@@ -85,6 +85,23 @@
                       <object class="GtkTreeSelection"/>
                     </child>
                     <child>
+                      <object class="GtkTreeViewColumn" id="ProcessesCommandCol">
+                        <property name="resizable">True</property>
+                        <property name="sizing">fixed</property>
+                        <property name="title" translatable="yes">Command</property>
+                        <property name="clickable">True</property>
+                        <property name="reorderable">True</property>
+                        <property name="sort_indicator">True</property>
+                        <property name="sort_column_id">5</property>
+                        <child>
+                          <object class="GtkCellRendererText" id="ProcessesCommandText"/>
+                          <attributes>
+                            <attribute name="text">5</attribute>
+                          </attributes>
+                        </child>
+                      </object>
+                    </child>
+                    <child>
                       <object class="GtkTreeViewColumn" id="ProcessesBeginCol">
                         <property name="resizable">True</property>
                         <property name="sizing">fixed</property>
@@ -114,23 +131,6 @@
                           <object class="GtkCellRendererText" id="ProcessesEndText"/>
                           <attributes>
                             <attribute name="text">4</attribute>
-                          </attributes>
-                        </child>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkTreeViewColumn" id="ProcessesCommandCol">
-                        <property name="resizable">True</property>
-                        <property name="sizing">fixed</property>
-                        <property name="title" translatable="yes">Command</property>
-                        <property name="clickable">True</property>
-                        <property name="reorderable">True</property>
-                        <property name="sort_indicator">True</property>
-                        <property name="sort_column_id">5</property>
-                        <child>
-                          <object class="GtkCellRendererText" id="ProcessesCommandText"/>
-                          <attributes>
-                            <attribute name="text">5</attribute>
                           </attributes>
                         </child>
                       </object>
