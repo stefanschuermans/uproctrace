@@ -34,6 +34,18 @@
       <column type="gint"/>
       <!-- column-name max_rss_kb_text -->
       <column type="gchararray"/>
+      <!-- column-name page_faults -->
+      <column type="gint"/>
+      <!-- column-name page_faults_text -->
+      <column type="gchararray"/>
+      <!-- column-name file_sys_ops -->
+      <column type="gint"/>
+      <!-- column-name file_sys_ops_text -->
+      <column type="gchararray"/>
+      <!-- column-name ctx_sw -->
+      <column type="gint"/>
+      <!-- column-name ctx_sw_text -->
+      <column type="gchararray"/>
     </columns>
   </object>
   <object class="GtkWindow" id="Application">
@@ -153,6 +165,57 @@
                           <object class="GtkCellRendererText" id="ProcessesMemoryText"/>
                           <attributes>
                             <attribute name="text">9</attribute>
+                          </attributes>
+                        </child>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkTreeViewColumn" id="ProcessesPageFaultsCol">
+                        <property name="resizable">True</property>
+                        <property name="sizing">fixed</property>
+                        <property name="title" translatable="yes">Page Faults</property>
+                        <property name="clickable">True</property>
+                        <property name="reorderable">True</property>
+                        <property name="sort_indicator">True</property>
+                        <property name="sort_column_id">10</property>
+                        <child>
+                          <object class="GtkCellRendererText" id="ProcessesPageFaultsText"/>
+                          <attributes>
+                            <attribute name="text">11</attribute>
+                          </attributes>
+                        </child>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkTreeViewColumn" id="ProcessesFileSysOpsCol">
+                        <property name="resizable">True</property>
+                        <property name="sizing">fixed</property>
+                        <property name="title" translatable="yes">File System Operations</property>
+                        <property name="clickable">True</property>
+                        <property name="reorderable">True</property>
+                        <property name="sort_indicator">True</property>
+                        <property name="sort_column_id">12</property>
+                        <child>
+                          <object class="GtkCellRendererText" id="ProcessesFileSysOpsText"/>
+                          <attributes>
+                            <attribute name="text">13</attribute>
+                          </attributes>
+                        </child>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkTreeViewColumn" id="ProcessesCtxSwCol">
+                        <property name="resizable">True</property>
+                        <property name="sizing">fixed</property>
+                        <property name="title" translatable="yes">Context Switches</property>
+                        <property name="clickable">True</property>
+                        <property name="reorderable">True</property>
+                        <property name="sort_indicator">True</property>
+                        <property name="sort_column_id">14</property>
+                        <child>
+                          <object class="GtkCellRendererText" id="ProcessesCtxSwText"/>
+                          <attributes>
+                            <attribute name="text">15</attribute>
                           </attributes>
                         </child>
                       </object>

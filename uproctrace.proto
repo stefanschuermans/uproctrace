@@ -13,19 +13,31 @@ message stringlist {
 
 message proc_begin {
   required int32 pid = 1;
-  optional int32 ppid = 2;
-  optional string exe = 3;
-  optional string cwd = 4;
-  optional stringlist cmdline = 5;
-  optional stringlist environ = 6;
+  optional int32 ppid = 2; ///< pid of parent process
+  optional string exe = 3; ///< path to executable
+  optional string cwd = 4; ///< working directory
+  optional stringlist cmdline = 5; ///< command line
+  optional stringlist environ = 6; ///< environment variables
 }
 
 message proc_end {
   required int32 pid = 1;
-  optional timespec cpu_time = 2;
-  optional timespec user_time = 3;
-  optional timespec sys_time = 4;
-  optional int64 max_rss_kb = 5;
+  /// fields from clock_gettime
+  //@{
+  optional timespec cpu_time = 2; ///< CPU time usage
+  //@}
+  /// fields from getrusage
+  //@{
+  optional timespec user_time = 3; ///< CPU time spent in user space
+  optional timespec sys_time = 4; ///< CPU spent in kernel space
+  optional int64 max_rss_kb = 5; ///< maximum resisent set size in KiB
+  optional int64 min_flt = 6; ///< minor page fault count (i.e. no I/O)
+  optional int64 maj_flt = 7; ///< major page fault count (i.e. I/O needed)
+  optional int64 in_block = 8; ///< number of input operations on file system
+  optional int64 ou_block = 9; ///< number of output operations on file system
+  optional int64 n_v_csw = 10; ///< number of voluntary context switches
+  optional int64 n_iv_csw = 11; ///< number of involuntary context switches
+  //@}
 }
 
 message event {

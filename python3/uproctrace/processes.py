@@ -1,7 +1,6 @@
 # UProcTrace: User-space Process Tracing
 # Copyright 2020: Stefan Schuermans, Aachen, Germany <stefan@schuermans.info>
 # Copyleft: GNU LESSER GENERAL PUBLIC LICENSE version 3 (see LICENSE)
-
 """
 Processes in a trace file.
 """
@@ -13,6 +12,8 @@ class Process():
     """
     A process parsed from a trace.
     """
+
+    # pylint: disable=R0904
     def __init__(self, proc_id: int, pid: int):
         """
         Initialize process.
@@ -95,6 +96,24 @@ class Process():
         return self._begin.exe
 
     @property
+    def in_block(self) -> int:
+        """
+        Number of input operations on file system.
+        """
+        if self._end is None:
+            return None
+        return self._end.in_block
+
+    @property
+    def maj_flt(self) -> int:
+        """
+        Major page fault count (i.e. I/O needed).
+        """
+        if self._end is None:
+            return None
+        return self._end.maj_flt
+
+    @property
     def max_rss_kb(self) -> int:
         """
         Maximum resident set size of process (in KiB).
@@ -102,6 +121,42 @@ class Process():
         if self._end is None:
             return None
         return self._end.max_rss_kb
+
+    @property
+    def min_flt(self) -> int:
+        """
+        Minor page fault count (i.e. no I/O).
+        """
+        if self._end is None:
+            return None
+        return self._end.min_flt
+
+    @property
+    def n_iv_csw(self) -> int:
+        """
+        Number of involuntary context switches.
+        """
+        if self._end is None:
+            return None
+        return self._end.n_iv_csw
+
+    @property
+    def n_v_csw(self) -> int:
+        """
+        Number of voluntary context switches.
+        """
+        if self._end is None:
+            return None
+        return self._end.n_v_csw
+
+    @property
+    def ou_block(self) -> int:
+        """
+        Number of output operations on file system.
+        """
+        if self._end is None:
+            return None
+        return self._end.ou_block
 
     @property
     def parent(self):

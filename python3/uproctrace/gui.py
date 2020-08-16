@@ -5,6 +5,7 @@
 Graphical user interface of UProcTrace.
 """
 
+import functools
 import shlex
 import time
 
@@ -17,6 +18,15 @@ gi.require_version('Gdk', '3.0')
 gi.require_version('Gtk', '3.0')
 # pylint: disable=C0413
 from gi.repository import Gdk, Gtk
+
+
+def add_none(val_a: int, val_b: int) -> int:
+    """
+    Integer addition with support for None.
+    """
+    if val_a is None or val_b is None:
+        return None
+    return val_a + val_b
 
 
 def cmdline2str(cmdline: list) -> str:
@@ -65,6 +75,15 @@ def duration2str(duration: float) -> str:
     txt += f'{dur_ns:d} ns '
     txt += f'({duration:f} s)'
     return txt
+
+
+def int2str(val: int) -> str:
+    """
+    Convert integer to string, support None.
+    """
+    if val is None:
+        return '???'
+    return f'{val:d}'
 
 
 def kb2str(size_kb: int) -> str:
@@ -119,6 +138,12 @@ class UptGui:
     PROC_CPU_TIME_TEXT = 7
     PROC_MAX_RSS_KB = 8
     PROC_MAX_RSS_KB_TEXT = 9
+    PROC_PAGE_FAULTS = 10
+    PROC_PAGE_FAULTS_TEXT = 11
+    PROC_FILE_SYS_OPS = 12
+    PROC_FILE_SYS_OPS_TEXT = 13
+    PROC_CTX_SW = 14
+    PROC_CTX_SW_TEXT = 15
 
     def __init__(self, proto_filename):
         """
@@ -139,6 +164,54 @@ class UptGui:
         self.builder.connect_signals(handlers)
         # open trace file
         self.openTrace(proto_filename)
+
+    def fillProcessesEntry(self, proc_iter,
+                           proc: uproctrace.processes.Process):
+        """
+        Fill attributes of processes tree entry.
+        proc_iter: process tree entry
+        proc: process object
+        """
+        self.wid_processes_tree.set_value(proc_iter, self.PROC_PROC_ID,
+                                          proc.proc_id)
+        self.fillProcessesEntryAttr(proc_iter, self.PROC_BEGIN_TIMESTAMP,
+                                    self.PROC_BEGIN_TIMESTAMP_TEXT,
+                                    timestamp2str, proc.begin_timestamp)
+        self.fillProcessesEntryAttr(proc_iter, self.PROC_END_TIMESTAMP,
+                                    self.PROC_END_TIMESTAMP_TEXT,
+                                    timestamp2str, proc.end_timestamp)
+        self.wid_processes_tree.set_value(proc_iter, self.PROC_CMDLINE,
+                                          cmdline2str(proc.cmdline))
+        self.fillProcessesEntryAttr(proc_iter, self.PROC_CPU_TIME,
+                                    self.PROC_CPU_TIME_TEXT, duration2str,
+                                    proc.cpu_time)
+        self.fillProcessesEntryAttr(proc_iter, self.PROC_MAX_RSS_KB,
+                                    self.PROC_MAX_RSS_KB_TEXT, kb2str,
+                                    proc.max_rss_kb)
+        self.fillProcessesEntryAttr(proc_iter, self.PROC_PAGE_FAULTS,
+                                    self.PROC_PAGE_FAULTS_TEXT, int2str,
+                                    add_none(proc.min_flt, proc.maj_flt))
+        self.fillProcessesEntryAttr(proc_iter, self.PROC_FILE_SYS_OPS,
+                                    self.PROC_FILE_SYS_OPS_TEXT, int2str,
+                                    add_none(proc.in_block, proc.ou_block))
+        self.fillProcessesEntryAttr(proc_iter, self.PROC_CTX_SW,
+                                    self.PROC_CTX_SW_TEXT, int2str,
+                                    add_none(proc.n_v_csw, proc.n_iv_csw))
+
+    def fillProcessesEntryAttr(self, proc_iter, col: int, text_col: int,
+                               val2str_func, val):
+        """
+        Fill attribute of processes tree entry.
+        proc_iter: process tree entry
+        col: value column number
+        text_col: text column number
+        val2str_func: function to transform value to string
+        val: value
+        """
+        # pylint: disable=R0913
+        self.wid_processes_tree.set_value(proc_iter, col, val)
+        self.wid_processes_tree.set_value(proc_iter, text_col,
+                                          val2str_func(val))
 
     def onDestroy(self, _widget):
         """
@@ -219,32 +292,7 @@ class UptGui:
             proc = procs[0]
             del procs[0]
             proc_iter = self.wid_processes_tree.append(parent_iter)
-            self.wid_processes_tree.set_value(proc_iter, self.PROC_PROC_ID,
-                                              proc.proc_id)
-            self.wid_processes_tree.set_value(proc_iter,
-                                              self.PROC_BEGIN_TIMESTAMP,
-                                              proc.begin_timestamp)
-            self.wid_processes_tree.set_value(
-                proc_iter, self.PROC_BEGIN_TIMESTAMP_TEXT,
-                timestamp2str(proc.begin_timestamp))
-            self.wid_processes_tree.set_value(proc_iter,
-                                              self.PROC_END_TIMESTAMP,
-                                              proc.end_timestamp)
-            self.wid_processes_tree.set_value(
-                proc_iter, self.PROC_END_TIMESTAMP_TEXT,
-                timestamp2str(proc.end_timestamp))
-            self.wid_processes_tree.set_value(proc_iter, self.PROC_CMDLINE,
-                                              cmdline2str(proc.cmdline))
-            self.wid_processes_tree.set_value(proc_iter, self.PROC_CPU_TIME,
-                                              proc.cpu_time)
-            self.wid_processes_tree.set_value(proc_iter,
-                                              self.PROC_CPU_TIME_TEXT,
-                                              duration2str(proc.cpu_time))
-            self.wid_processes_tree.set_value(proc_iter, self.PROC_MAX_RSS_KB,
-                                              proc.max_rss_kb)
-            self.wid_processes_tree.set_value(proc_iter,
-                                              self.PROC_MAX_RSS_KB_TEXT,
-                                              kb2str(proc.max_rss_kb))
+            self.fillProcessesEntry(proc_iter, proc)
             to_be_output.append((proc.children, proc_iter))
         # show all processes
         self.wid_processes_view.expand_all()
@@ -317,15 +365,36 @@ class UptGui:
                 add(f'{key} {i:d}', value, list_iter)
             return list_iter
 
+        def add_sum(key: str, sub_keys: list, values: list, parent_iter=None):
+            """
+            Add a sum of multiple values to a process and include individual
+            values as subtree.
+            Add to specified parent (if parent_iter is specified).
+            Return iterator to added top-level of detail subtree.
+            """
+            sum_val = functools.reduce(add_none, values, 0)
+            sum_iter = add(key, int2str(sum_val), parent_iter)
+            for sub_key, val in zip(sub_keys, values):
+                add(sub_key, int2str(val), sum_iter)
+            self.wid_details_view.expand_row(
+                self.wid_details_tree.get_path(sum_iter), True)
+            return sum_iter
+
         add('begin time', timestamp2str(proc.begin_timestamp))
         cmdline_iter = add_list('command line', proc.cmdline)
         self.wid_details_view.expand_row(
             self.wid_details_tree.get_path(cmdline_iter), True)
+        add_sum('context switches', ['involuntary', 'voluntary'],
+                [proc.n_iv_csw, proc.n_v_csw])
         add('CPU time', duration2str(proc.cpu_time))
         add('end time', timestamp2str(proc.end_timestamp))
         add_list('environment', sorted(proc.environ))
         add('executable', proc.exe)
+        add_sum('file system operations', ['input', 'output'],
+                [proc.in_block, proc.ou_block])
         add('max. resident memory', kb2str(proc.max_rss_kb))
+        add_sum('page faults', ['major', 'minor'],
+                [proc.maj_flt, proc.min_flt])
         add('pid', str(proc.pid))
         add('ppid', str(proc.ppid))
         add('system CPU time', duration2str(proc.sys_time))

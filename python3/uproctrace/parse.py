@@ -1,7 +1,6 @@
 # UProcTrace: User-space Process Tracing
 # Copyright 2020: Stefan Schuermans, Aachen, Germany <stefan@schuermans.info>
 # Copyleft: GNU LESSER GENERAL PUBLIC LICENSE version 3 (see LICENSE)
-
 """
 Parsing of uproctrace protobuf 2 events.
 """
@@ -164,6 +163,9 @@ class ProcEnd(ProcBeginOrEnd):
     """
     Process end event.
     """
+
+    # pylint: disable=R0902
+
     def __init__(self, pb2_ev: pb2.event):
         """
         Initialize process end event from PB2 event.
@@ -179,6 +181,12 @@ class ProcEnd(ProcBeginOrEnd):
             p_e.sys_time) if p_e.HasField('sys_time') else None
         self._max_rss_kb = p_e.max_rss_kb if p_e.HasField(
             'max_rss_kb') else None
+        self._min_flt = p_e.min_flt if p_e.HasField('min_flt') else None
+        self._maj_flt = p_e.maj_flt if p_e.HasField('maj_flt') else None
+        self._in_block = p_e.in_block if p_e.HasField('in_block') else None
+        self._ou_block = p_e.ou_block if p_e.HasField('ou_block') else None
+        self._n_v_csw = p_e.n_v_csw if p_e.HasField('n_v_csw') else None
+        self._n_iv_csw = p_e.n_iv_csw if p_e.HasField('n_iv_csw') else None
 
     @property
     def pid(self) -> int:
@@ -214,6 +222,48 @@ class ProcEnd(ProcBeginOrEnd):
         Maximum amount of memory used (in KiB).
         """
         return self._max_rss_kb
+
+    @property
+    def min_flt(self) -> int:
+        """
+        Minor page fault count (i.e. no I/O).
+        """
+        return self._min_flt
+
+    @property
+    def maj_flt(self) -> int:
+        """
+        Major page fault count (i.e. I/O needed).
+        """
+        return self._maj_flt
+
+    @property
+    def in_block(self) -> int:
+        """
+        Number of input operations on file system.
+        """
+        return self._in_block
+
+    @property
+    def ou_block(self) -> int:
+        """
+        Number of output operations on file system.
+        """
+        return self._ou_block
+
+    @property
+    def n_v_csw(self) -> int:
+        """
+        Number of voluntary context switches.
+        """
+        return self._n_v_csw
+
+    @property
+    def n_iv_csw(self) -> int:
+        """
+        Number of involuntary context switches.
+        """
+        return self._n_iv_csw
 
 
 class Visitor(abc.ABC):
