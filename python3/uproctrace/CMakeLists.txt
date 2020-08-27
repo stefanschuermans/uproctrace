@@ -11,11 +11,11 @@ add_custom_command(
   OUTPUT
   ${PYTHON_UPT_DIR}/uproctrace_pb2.py
   DEPENDS
-  ${CMAKE_SOURCE_DIR}/uproctrace.proto
+  ${PROJECT_SOURCE_DIR}/uproctrace.proto
   COMMAND
-  protoc --proto_path ${CMAKE_SOURCE_DIR}
+  protoc --proto_path ${PROJECT_SOURCE_DIR}
          --python_out ${PYTHON_UPT_DIR}
-         ${CMAKE_SOURCE_DIR}/uproctrace.proto
+         ${PROJECT_SOURCE_DIR}/uproctrace.proto
 )
 install(
   FILES
