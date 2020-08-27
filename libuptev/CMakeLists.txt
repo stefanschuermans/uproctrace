@@ -3,11 +3,11 @@ add_custom_command(
   ${CMAKE_CURRENT_BINARY_DIR}/src/uproctrace.pb-c.c
   ${CMAKE_CURRENT_BINARY_DIR}/src/uproctrace.pb-c.h
   DEPENDS
-  ${CMAKE_SOURCE_DIR}/uproctrace.proto
+  ${PROJECT_SOURCE_DIR}/uproctrace.proto
   COMMAND
-  protoc-c --proto_path ${CMAKE_SOURCE_DIR}
+  protoc-c --proto_path ${PROJECT_SOURCE_DIR}
            --c_out ${CMAKE_CURRENT_BINARY_DIR}/src
-           ${CMAKE_SOURCE_DIR}/uproctrace.proto
+           ${PROJECT_SOURCE_DIR}/uproctrace.proto
 )
 
 add_library(
