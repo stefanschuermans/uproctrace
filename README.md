@@ -25,7 +25,7 @@ apt-get install -y build-essential cmake gcc \
                    libprotobuf-c-dev libprotobuf-dev \
                    ninja-build \
                    protobuf-c-compiler protobuf-compiler \
-                   pylint3 python3 python3-protobuf
+                   pylint3 python3 python3-protobuf python3-tabulate
 ```
 
 For the graphical user interface, install the additional dependencies:
