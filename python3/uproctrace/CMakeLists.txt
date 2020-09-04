@@ -70,6 +70,7 @@ pyfile(dump)
 pyfile(gui)
 pyfile(parse)
 pyfile(processes)
+pyfile(stats)
 pyfile(tool)
 
 add_custom_target(
