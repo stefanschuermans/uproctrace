@@ -7,6 +7,7 @@ Graphical user interface of UProcTrace.
 
 import functools
 import shlex
+import signal
 import time
 
 import uproctrace.gui_glade
@@ -17,7 +18,9 @@ import gi
 gi.require_version('Gdk', '3.0')
 gi.require_version('Gtk', '3.0')
 # pylint: disable=C0413
-from gi.repository import Gdk, Gtk
+from gi.repository import Gdk, Gtk, GLib
+
+GLib.unix_signal_add(GLib.PRIORITY_DEFAULT, signal.SIGINT, Gtk.main_quit)
 
 
 def add_none(val_a: int, val_b: int) -> int:
