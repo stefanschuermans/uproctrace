@@ -6,6 +6,7 @@ Graphical user interface of UProcTrace.
 """
 
 import functools
+import re
 import shlex
 import signal
 import time
@@ -21,6 +22,9 @@ gi.require_version('Gtk', '3.0')
 from gi.repository import Gdk, Gtk, GLib
 
 GLib.unix_signal_add(GLib.PRIORITY_DEFAULT, signal.SIGINT, Gtk.main_quit)
+
+# regular expression for an environment variable assignment
+re_env_var = re.compile(r'^(?P<name>[A-Za-z_][A-Za-z0-9_]*)=(?P<value>.*)$')
 
 
 def add_none(val_a: int, val_b: int) -> int:
@@ -38,7 +42,23 @@ def cmdline2str(cmdline: list) -> str:
     """
     if cmdline is None:
         return '???'
-    return ' '.join([shlex.quote(s) for s in cmdline])
+    return ' '.join([cmdline_str_escape(s) for s in cmdline])
+
+
+def cmdline_str_escape(s: str) -> str:
+    """
+    Escape a command line string for shell use in a way that also works for
+    environment variables (i.e., not escaping the variable name).
+    """
+    m = re_env_var.match(s)
+    if not m:
+        # not a variable assignment -> escape entire string
+        return shlex.quote(s)
+    # variable assignment -> escape only value part
+    # (also works if it only looks like a variable assignment)
+    name = m.group('name')
+    value = shlex.quote(m.group('value'))
+    return f'{name:s}={value:s}'
 
 
 def duration2str(duration: float) -> str:
