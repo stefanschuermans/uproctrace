@@ -6,6 +6,7 @@ Graphical user interface of UProcTrace.
 """
 
 import functools
+import re
 import shlex
 import signal
 import time
@@ -21,6 +22,9 @@ gi.require_version('Gtk', '3.0')
 from gi.repository import Gdk, Gtk, GLib
 
 GLib.unix_signal_add(GLib.PRIORITY_DEFAULT, signal.SIGINT, Gtk.main_quit)
+
+# regular expression for an environment variable assignment
+re_env_var = re.compile(r'^(?P<name>[A-Za-z_][A-Za-z0-9_]*)=(?P<value>.*)$')
 
 
 def add_none(val_a: int, val_b: int) -> int:
@@ -38,7 +42,23 @@ def cmdline2str(cmdline: list) -> str:
     """
     if cmdline is None:
         return '???'
-    return ' '.join([shlex.quote(s) for s in cmdline])
+    return ' '.join([cmdline_str_escape(s) for s in cmdline])
+
+
+def cmdline_str_escape(s: str) -> str:
+    """
+    Escape a command line string for shell use in a way that also works for
+    environment variables (i.e., not escaping the variable name).
+    """
+    m = re_env_var.match(s)
+    if not m:
+        # not a variable assignment -> escape entire string
+        return shlex.quote(s)
+    # variable assignment -> escape only value part
+    # (also works if it only looks like a variable assignment)
+    name = m.group('name')
+    value = shlex.quote(m.group('value'))
+    return f'{name:s}={value:s}'
 
 
 def duration2str(duration: float) -> str:
@@ -162,7 +182,8 @@ class UptGui:
         handlers = {
             'onDestroy': self.onDestroy,
             'onDetailsRowActivated': self.onDetailsRowActivated,
-            'onProcessesCursorChanged': self.onProcessesCursorChanged
+            'onProcessesCursorChanged': self.onProcessesCursorChanged,
+            'onProcessesRowActivated': self.onProcessesRowActivated
         }
         self.builder.connect_signals(handlers)
         # open trace file
@@ -275,6 +296,38 @@ class UptGui:
                                                     self.PROC_PROC_ID)
         # show details of selected process
         self.showDetails(proc_id)
+
+    def onProcessesRowActivated(self, _widget, _row, _col):
+        """
+        Row in processes view has been activated.
+        """
+        # get selected row (if any)
+        processes_sel = self.wid_processes_view.get_selection()
+        if processes_sel is None:
+            return
+        processes_iter = processes_sel.get_selected()[1]
+        if processes_iter is None:
+            return
+        # get process
+        proc_id = self.wid_processes_tree.get_value(processes_iter,
+                                                    self.PROC_PROC_ID)
+        if proc_id is None or proc_id < 0:
+            return
+        proc = self.processes.getProcess(proc_id)
+        if proc is None:
+            return
+        # copy shell command line to repeat process call to clipboard
+        # ( cd <workdir>; env -i <environment> <cmdline> )
+        string = '('
+        if proc.cwd:
+            string += ' cd ' + cmdline_str_escape(proc.cwd) + ';'
+        if proc.environ:
+            string += ' env -i ' + cmdline2str(sorted(proc.environ))
+        if proc.cmdline:
+            string += ' ' + cmdline2str(proc.cmdline)
+        string += ' )'
+        self.clipboard.set_text(string, -1)
+        self.clipboard.store()
 
     def openTrace(self, proto_filename: str):
         """

@@ -81,10 +81,22 @@ upt-tool mytrace.upt dump
 
 ## Graphical User interface
 
-To explore a trace in the graphical user interface, run:
+To explore a trace in the graphical user interface (GUI), run:
 ```
 upt-tool mytrace.upt gui
 ```
+
+The left half of the GUI shows the process tree with a few selected details
+about each process.  The right half shows further details of the process
+selected on the left side.
+
+By double-clicking on the entries in the right tree view, their content can be
+copied to the clipboard. If a row with subordinate rows is double-clicked, the
+contents of all the subordinate entries are copied to the clipboard, using
+proper shell-escaping of the individual entries. If a process row on the left
+side is double-clicked, a shell command for repeating the execution of the
+process (including working directory, environment variables and command line)
+is copied to the clipboard.
 
 ## Example: Trace Build Process
 
