@@ -24,7 +24,7 @@ from gi.repository import Gdk, Gtk, GLib
 GLib.unix_signal_add(GLib.PRIORITY_DEFAULT, signal.SIGINT, Gtk.main_quit)
 
 # regular expression for an environment variable assignment
-re_env_var = re.compile(r'^(?P<name>[A-Za-z_][A-Za-z0-9_]*)=(?P<value>.*)$')
+RE_ENV_VAR = re.compile(r'^(?P<name>[A-Za-z_][A-Za-z0-9_]*)=(?P<value>.*)$')
 
 
 def add_none(val_a: int, val_b: int) -> int:
@@ -45,19 +45,19 @@ def cmdline2str(cmdline: list) -> str:
     return ' '.join([cmdline_str_escape(s) for s in cmdline])
 
 
-def cmdline_str_escape(s: str) -> str:
+def cmdline_str_escape(string: str) -> str:
     """
     Escape a command line string for shell use in a way that also works for
     environment variables (i.e., not escaping the variable name).
     """
-    m = re_env_var.match(s)
-    if not m:
+    match = RE_ENV_VAR.match(string)
+    if not match:
         # not a variable assignment -> escape entire string
-        return shlex.quote(s)
+        return shlex.quote(string)
     # variable assignment -> escape only value part
     # (also works if it only looks like a variable assignment)
-    name = m.group('name')
-    value = shlex.quote(m.group('value'))
+    name = match.group('name')
+    value = shlex.quote(match.group('value'))
     return f'{name:s}={value:s}'
 
 
@@ -147,6 +147,8 @@ class UptGui:
     """
     Graphical user interface of UProcTrace.
     """
+
+    # pylint: disable=R0902
 
     DETAIL_PROC_ID = 0
     DETAIL_KEY = 1
