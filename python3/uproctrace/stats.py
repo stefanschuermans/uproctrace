@@ -34,13 +34,14 @@ def calculate_stats(upt_traces: list) -> dict:
     for upt_trace in upt_traces:
 
         # Load all processes of the trace file
-        with open(upt_trace, "rb") as f:
-            processes = uproctrace.processes.Processes(f)
+        with open(upt_trace, "rb") as upt_f:
+            processes = uproctrace.processes.Processes(upt_f)
 
-        for process in processes._all_processes.values():
+        for process in processes.getAllProcesses().values():
 
             # Ignore processes for which we do not have full information
-            if process._begin is None or process._end is None:
+            if process.getBeginTimestamp() is None or process.getEndTimestamp(
+            ) is None:
                 continue
 
             # Update the values
@@ -50,7 +51,7 @@ def calculate_stats(upt_traces: list) -> dict:
     # Calulate the statistics
     stats = dict()
     for attr, values in attr_values.items():
-        if len(values) == 0:
+        if not values:
             stats[attr] = (0, 0, 0, 0)
             continue
 

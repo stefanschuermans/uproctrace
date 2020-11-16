@@ -51,6 +51,7 @@ def gui(args):
         return 1
     import uproctrace.gui
     uproctrace.gui.run(args.trace[0])
+    return 0
 
 
 def pstree(args):

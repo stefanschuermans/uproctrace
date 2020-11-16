@@ -24,7 +24,7 @@ from gi.repository import Gdk, Gtk, GLib
 GLib.unix_signal_add(GLib.PRIORITY_DEFAULT, signal.SIGINT, Gtk.main_quit)
 
 # regular expression for an environment variable assignment
-re_env_var = re.compile(r'^(?P<name>[A-Za-z_][A-Za-z0-9_]*)=(?P<value>.*)$')
+RE_ENV_VAR = re.compile(r'^(?P<name>[A-Za-z_][A-Za-z0-9_]*)=(?P<value>.*)$')
 
 
 def add_none(val_a: int, val_b: int) -> int:
@@ -45,19 +45,19 @@ def cmdline2str(cmdline: list) -> str:
     return ' '.join([cmdline_str_escape(s) for s in cmdline])
 
 
-def cmdline_str_escape(s: str) -> str:
+def cmdline_str_escape(string: str) -> str:
     """
     Escape a command line string for shell use in a way that also works for
     environment variables (i.e., not escaping the variable name).
     """
-    m = re_env_var.match(s)
-    if not m:
+    match = RE_ENV_VAR.match(string)
+    if not match:
         # not a variable assignment -> escape entire string
-        return shlex.quote(s)
+        return shlex.quote(string)
     # variable assignment -> escape only value part
     # (also works if it only looks like a variable assignment)
-    name = m.group('name')
-    value = shlex.quote(m.group('value'))
+    name = match.group('name')
+    value = shlex.quote(match.group('value'))
     return f'{name:s}={value:s}'
 
 
@@ -148,6 +148,8 @@ class UptGui:
     Graphical user interface of UProcTrace.
     """
 
+    # pylint: disable=R0902
+
     DETAIL_PROC_ID = 0
     DETAIL_KEY = 1
     DETAIL_VALUE = 2
@@ -175,15 +177,18 @@ class UptGui:
         self.builder = Gtk.Builder()
         self.builder.add_from_string(uproctrace.gui_glade.DATA)
         self.clipboard = Gtk.Clipboard.get(Gdk.SELECTION_CLIPBOARD)
+        self.show_processes_as_tree = True
         self.wid_details_tree = self.builder.get_object('DetailsTree')
         self.wid_details_view = self.builder.get_object('DetailsView')
         self.wid_processes_tree = self.builder.get_object('ProcessesTree')
         self.wid_processes_view = self.builder.get_object('ProcessesView')
+        self.wid_tree_toggle = self.builder.get_object('TreeToggle')
         handlers = {
             'onDestroy': self.onDestroy,
             'onDetailsRowActivated': self.onDetailsRowActivated,
             'onProcessesCursorChanged': self.onProcessesCursorChanged,
-            'onProcessesRowActivated': self.onProcessesRowActivated
+            'onProcessesRowActivated': self.onProcessesRowActivated,
+            'onTreeToggled': self.onTreeToggled
         }
         self.builder.connect_signals(handlers)
         # open trace file
@@ -329,15 +334,31 @@ class UptGui:
         self.clipboard.set_text(string, -1)
         self.clipboard.store()
 
+    def onTreeToggled(self, _widget):
+        """
+        Tree button toggled: switch between tree and list.
+        """
+        # get new state
+        self.show_processes_as_tree = self.wid_tree_toggle.get_active()
+        # re-populate processes view
+        self.populateProcesses()
+
     def openTrace(self, proto_filename: str):
         """
         Open a trace file.
         """
-        # forget old processes
-        self.wid_processes_tree.clear()
-        # lead new data
+        # load new data
         with open(proto_filename, 'rb') as proto_file:
             self.processes = uproctrace.processes.Processes(proto_file)
+        # populate processes view
+        self.populateProcesses()
+
+    def populateProcesses(self):
+        """
+        Populate processes view.
+        """
+        # forget old processes
+        self.wid_processes_tree.clear()
         # add processes to processes tree store
         to_be_output = [(self.processes.toplevel, None)]
         while to_be_output:
@@ -347,7 +368,8 @@ class UptGui:
                 continue
             proc = procs[0]
             del procs[0]
-            proc_iter = self.wid_processes_tree.append(parent_iter)
+            proc_iter = self.wid_processes_tree.append(
+                parent_iter if self.show_processes_as_tree else None)
             self.fillProcessesEntry(proc_iter, proc)
             to_be_output.append((proc.children, proc_iter))
         # show all processes

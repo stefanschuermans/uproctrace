@@ -280,6 +280,12 @@ class Processes(uproctrace.parse.Visitor):
         """
         return self._toplevel_processes.copy()
 
+    def getAllProcesses(self) -> dict:
+        """
+        Return all processes.
+        """
+        return self._all_processes.copy()
+
     def getProcess(self, proc_id: int):
         """
         Return process with proc_id, or None if not found.
