@@ -42,8 +42,9 @@ char *uptev_read_file(char const *pathname, size_t *size) {
       return NULL;
     }
     if (len == 0) {
-      /* end of file -> return data */
+      /* end of file -> close file and return data */
       *size = pos;
+      close(fd);
       return data;
     }
     /* data read -> add to buffer */
