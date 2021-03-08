@@ -466,7 +466,8 @@ class UptGui:
                 [proc.n_iv_csw, proc.n_v_csw])
         add('CPU time', duration2str(proc.cpu_time))
         add('end time', timestamp2str(proc.end_timestamp))
-        add_list('environment', sorted(proc.environ))
+        add_list('environment',
+                 sorted(proc.environ) if proc.environ is not None else None)
         add('executable', proc.exe)
         add_sum('file system operations', ['input', 'output'],
                 [proc.in_block, proc.ou_block])

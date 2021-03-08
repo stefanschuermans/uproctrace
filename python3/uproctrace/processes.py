@@ -322,6 +322,7 @@ class Processes(uproctrace.parse.Visitor):
             proc = self._current_processes[proc_end.pid]
         else:
             proc = self._newProcess(proc_end.pid)
+            self._toplevel_processes.append(proc)  # unknown parent -> toplevel
         # set end event of process and process of end event
         proc.setEnd(proc_end)
         proc_end.setProcess(proc)
