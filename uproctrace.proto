@@ -22,6 +22,8 @@ message proc_begin {
 
 message proc_end {
   required int32 pid = 1;
+  optional int32 ppid = 12; ///< pid of parent process (important for fork(),
+                            ///< because child of fork has no proc_begin event)
   /// fields from clock_gettime
   //@{
   optional timespec cpu_time = 2; ///< CPU time usage

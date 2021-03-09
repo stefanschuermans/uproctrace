@@ -34,6 +34,10 @@ int uptev_proc_end(void **data, size_t *size) {
 
   struct _Uproctrace__ProcEnd proc_end = UPROCTRACE__PROC_END__INIT;
   proc_end.pid = getpid();
+  // ppid also in end event because child of fork() has no begin event
+  proc_end.has_ppid = 1;
+  proc_end.ppid = getppid();
+
   proc_end.cpu_time = &cpu_time;
 
   struct rusage usage;

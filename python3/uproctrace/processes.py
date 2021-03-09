@@ -171,20 +171,20 @@ class Process():
         """
         Linux process ID.
         """
-        if self._begin is not None:
-            return self._begin.pid
-        if self._end is not None:
-            return self._end.pid
-        return None
+        return self._pid
 
     @property
     def ppid(self):
         """
         Linux process ID of parent process.
         """
-        if self._begin is None:
-            return None
-        return self._begin.ppid
+        if self._begin is not None:
+            if self._begin.ppid is not None:
+                return self._begin.ppid
+        if self._end is not None:
+            if self._end.ppid:
+                return self._end.ppid
+        return None
 
     @property
     def proc_id(self):
@@ -355,6 +355,10 @@ class Processes(uproctrace.parse.Visitor):
         # set end event of process and process of end event
         proc.setEnd(proc_end)
         proc_end.setProcess(proc)
+        # add process to parent if available
+        if proc_end.ppid is not None:
+            parent = self._getProcess(proc_end.ppid)
+            self._parentChild(parent, proc)
         # remove process from dict of current processes (it ended)
         #   - it is guaranteed to be in it, because it came from _getProcess()
         del self._current_processes[proc_end.pid]
