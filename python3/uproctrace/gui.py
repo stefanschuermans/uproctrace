@@ -131,6 +131,15 @@ def kb2str(size_kb: int) -> str:
     return txt
 
 
+def str2str(str_or_none: str) -> str:
+    """
+    Convert string (or None) to string.
+    """
+    if str_or_none is None:
+        return '???'
+    return str_or_none
+
+
 def timestamp2str(timestamp: float) -> str:
     """
     Convert a timestamp to a human-reable time string."
@@ -406,6 +415,7 @@ class UptGui:
         """
         Show details of process.
         """
+        # pylint: disable=R0914
         # forget old details
         self.wid_details_tree.clear()
         # leave if invalid proc_id
@@ -443,6 +453,13 @@ class UptGui:
                 add(f'{key} {i:d}', value, list_iter)
             return list_iter
 
+        def add_list_sorted(key: str, values: list, parent_iter=None):
+            """
+            Wrapper for add_list(...) that sorts the list (if any) before.
+            """
+            values_sorted = sorted(values) if values is not None else None
+            return add_list(key, values_sorted, parent_iter)
+
         def add_sum(key: str, sub_keys: list, values: list, parent_iter=None):
             """
             Add a sum of multiple values to a process and include individual
@@ -466,19 +483,18 @@ class UptGui:
                 [proc.n_iv_csw, proc.n_v_csw])
         add('CPU time', duration2str(proc.cpu_time))
         add('end time', timestamp2str(proc.end_timestamp))
-        add_list('environment',
-                 sorted(proc.environ) if proc.environ is not None else None)
-        add('executable', proc.exe)
+        add_list_sorted('environment', proc.environ)
+        add('executable', str2str(proc.exe))
         add_sum('file system operations', ['input', 'output'],
                 [proc.in_block, proc.ou_block])
         add('max. resident memory', kb2str(proc.max_rss_kb))
         add_sum('page faults', ['major', 'minor'],
                 [proc.maj_flt, proc.min_flt])
-        add('pid', str(proc.pid))
-        add('ppid', str(proc.ppid))
+        add('pid', int2str(proc.pid))
+        add('ppid', int2str(proc.ppid))
         add('system CPU time', duration2str(proc.sys_time))
         add('user CPU time', duration2str(proc.user_time))
-        add('working directory', proc.cwd)
+        add('working directory', str2str(proc.cwd))
         # add parent
         parent_proc = proc.parent
         if parent_proc is None:

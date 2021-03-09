@@ -1,5 +1,6 @@
-__UPT_HOME__/tests/fork/forkapp
-  /bin/ls
-  ???
-    /bin/uptime
-  /bin/hostname
+???
+  __UPT_HOME__/tests/fork/forkapp
+    /bin/ls
+    ???
+      /bin/uptime
+    /bin/hostname

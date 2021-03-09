@@ -5,6 +5,7 @@
 Processes in a trace file.
 """
 
+import collections
 import uproctrace.parse
 
 
@@ -23,7 +24,7 @@ class Process():
         self._begin = None
         self._end = None
         self._parent = None
-        self._children = list()
+        self._children = collections.OrderedDict()  # proc_id -> Process
 
     @property
     def begin_timestamp(self) -> list:
@@ -39,7 +40,7 @@ class Process():
         """
         List of child processes.
         """
-        return self._children.copy()
+        return list(self._children.values())
 
     @property
     def cmdline(self) -> list:
@@ -214,7 +215,14 @@ class Process():
         """
         Add a child process.
         """
-        self._children.append(child)
+        self._children[child.proc_id] = child
+
+    def removeChild(self, child_proc_id: int):
+        """
+        Remove a child process.
+        """
+        if child_proc_id in self._children:
+            del self._children[child_proc_id]
 
     def setBegin(self, proc_begin: uproctrace.parse.ProcBegin):
         """
@@ -247,17 +255,47 @@ class Processes(uproctrace.parse.Visitor):
         self._timeline = dict()  # time -> list(parse.BaseEvent)
         self._all_processes = dict()  # proc_id -> process
         self._current_processes = dict()  # pid -> process (while pid alive)
-        self._toplevel_processes = list()  # list of processes without parent
+        # ordered dictionary of toplevel processes: proc_id -> Process
+        self._toplevel_processes = collections.OrderedDict()
+        # parse trace
         self._readTrace(proto_file)
 
-    def _newProcess(self, pid: int):
+    def _getProcess(self, pid: int) -> Process:
         """
-        Create new process, set its PID, store it and return it.
+        Get process with passed PID.
+        Create it if it does not exist.
+        Return process.
+        """
+        if pid in self._current_processes:
+            return self._current_processes[pid]
+        return self._newProcess(pid)
+
+    def _newProcess(self, pid: int) -> Process:
+        """
+        Create new process and set its PID.
+        Store it in all processes and current processes.
+        Make it a toplevel process initially (may be changed by caller).
+        Return new process.
         """
         proc_id = len(self._all_processes)
         proc = Process(proc_id, pid)
         self._all_processes[proc_id] = proc
+        self._current_processes[pid] = proc
+        self._toplevel_processes[proc_id] = proc
         return proc
+
+    def _parentChild(self, parent: Process, child: Process):
+        """
+        Establish parent/child relationship of two processes.
+        """
+        # terminate old relationship (if any)
+        if child.parent is not None:
+            child.parent.removeChild(child.proc_id)
+        if child.proc_id in self._toplevel_processes:
+            del self._toplevel_processes[child.proc_id]
+        # establish new relationship
+        parent.addChild(child)
+        child.setParent(parent)
 
     def _readTrace(self, proto_file):
         """
@@ -274,11 +312,11 @@ class Processes(uproctrace.parse.Visitor):
         self._timeline.setdefault(event.timestamp, list()).append(event)
 
     @property
-    def toplevel(self):
+    def toplevel(self) -> list:
         """
         List of toplevel processes.
         """
-        return self._toplevel_processes.copy()
+        return list(self._toplevel_processes.values())
 
     def getAllProcesses(self) -> dict:
         """
@@ -286,7 +324,7 @@ class Processes(uproctrace.parse.Visitor):
         """
         return self._all_processes.copy()
 
-    def getProcess(self, proc_id: int):
+    def getProcess(self, proc_id: int) -> Process:
         """
         Return process with proc_id, or None if not found.
         """
@@ -299,33 +337,24 @@ class Processes(uproctrace.parse.Visitor):
         self._visitBaseEvent(proc_begin)
         # new process
         proc = self._newProcess(proc_begin.pid)
-        # add process to dict of current processes
-        self._current_processes[proc_begin.pid] = proc
         # set begin event of process and process of begin event
         proc.setBegin(proc_begin)
         proc_begin.setProcess(proc)
-        # connect to parent
-        if proc_begin.ppid in self._current_processes:
-            parent = self._current_processes[proc_begin.ppid]
-            proc.setParent(parent)
-            parent.addChild(proc)
-        else:
-            self._toplevel_processes.append(proc)
+        # add process to parent if available
+        if proc_begin.ppid is not None:
+            parent = self._getProcess(proc_begin.ppid)
+            self._parentChild(parent, proc)
 
     def visitProcEnd(self, proc_end: uproctrace.parse.ProcEnd):
         """
         Process a process end event.
         """
         self._visitBaseEvent(proc_end)
-        # get process (or create it if it is not known)
-        if proc_end.pid in self._current_processes:
-            proc = self._current_processes[proc_end.pid]
-        else:
-            proc = self._newProcess(proc_end.pid)
-            self._toplevel_processes.append(proc)  # unknown parent -> toplevel
+        # get process
+        proc = self._getProcess(proc_end.pid)
         # set end event of process and process of end event
         proc.setEnd(proc_end)
         proc_end.setProcess(proc)
         # remove process from dict of current processes (it ended)
-        if proc_end.pid in self._current_processes:
-            del self._current_processes[proc_end.pid]
+        #   - it is guaranteed to be in it, because it came from _getProcess()
+        del self._current_processes[proc_end.pid]
