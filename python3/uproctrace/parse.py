@@ -82,6 +82,7 @@ class ProcBeginOrEnd(BaseEvent):
         super().__init__(pb2_ev)
         self._process = None
         self._pid = None
+        self._ppid = None
 
     @property
     def pid(self) -> int:
@@ -89,6 +90,13 @@ class ProcBeginOrEnd(BaseEvent):
         ID of process.
         """
         return self._pid
+
+    @property
+    def ppid(self) -> int:
+        """
+        ID of parent process.
+        """
+        return self._ppid
 
     @property
     def process(self):
@@ -122,13 +130,6 @@ class ProcBegin(ProcBeginOrEnd):
             p_b.cmdline) if p_b.HasField('cmdline') else None
         self._environ = self._pb2GetStringList(
             p_b.environ) if p_b.HasField('environ') else None
-
-    @property
-    def ppid(self) -> int:
-        """
-        ID of parent process.
-        """
-        return self._ppid
 
     @property
     def exe(self) -> str:
@@ -173,6 +174,7 @@ class ProcEnd(ProcBeginOrEnd):
         super().__init__(pb2_ev)
         p_e = pb2_ev.proc_end
         self._pid = p_e.pid
+        self._ppid = p_e.ppid if p_e.HasField('ppid') else None
         self._cpu_time = self._pb2GetTimespec(
             p_e.cpu_time) if p_e.HasField('cpu_time') else None
         self._user_time = self._pb2GetTimespec(
@@ -187,13 +189,6 @@ class ProcEnd(ProcBeginOrEnd):
         self._ou_block = p_e.ou_block if p_e.HasField('ou_block') else None
         self._n_v_csw = p_e.n_v_csw if p_e.HasField('n_v_csw') else None
         self._n_iv_csw = p_e.n_iv_csw if p_e.HasField('n_iv_csw') else None
-
-    @property
-    def pid(self) -> int:
-        """
-        ID of process.
-        """
-        return self._pid
 
     @property
     def cpu_time(self) -> float:
