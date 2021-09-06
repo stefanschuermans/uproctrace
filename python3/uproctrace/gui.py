@@ -19,7 +19,7 @@ import gi
 gi.require_version('Gdk', '3.0')
 gi.require_version('Gtk', '3.0')
 # pylint: disable=C0413
-from gi.repository import Gdk, Gtk, GLib
+from gi.repository import Gdk, Gtk, GLib, GObject
 
 GLib.unix_signal_add(GLib.PRIORITY_DEFAULT, signal.SIGINT, Gtk.main_quit)
 
@@ -192,12 +192,16 @@ class UptGui:
         self.wid_processes_tree = self.builder.get_object('ProcessesTree')
         self.wid_processes_view = self.builder.get_object('ProcessesView')
         self.wid_tree_toggle = self.builder.get_object('TreeToggle')
+        self.notifier = self.builder.get_object("NotificationRevealer")
+        self.notifier_msg = self.builder.get_object("NotificationMessage")
+        self.notifier_timeout = None
         handlers = {
             'onDestroy': self.onDestroy,
             'onDetailsRowActivated': self.onDetailsRowActivated,
+            'onNotificationClose': self.onNotificationClose,
             'onProcessesCursorChanged': self.onProcessesCursorChanged,
             'onProcessesRowActivated': self.onProcessesRowActivated,
-            'onTreeToggled': self.onTreeToggled
+            'onTreeToggled': self.onTreeToggled,
         }
         self.builder.connect_signals(handlers)
         # open trace file
@@ -281,8 +285,7 @@ class UptGui:
                                                     self.DETAIL_VALUE))
                 child_iter = self.wid_details_tree.iter_next(child_iter)
             string = cmdline2str(strings)
-        self.clipboard.set_text(string, -1)
-        self.clipboard.store()
+        self.storeInClipboardAndNotify(string)
         # get proc_id of selected row, nothing else to do if none
         proc_id = self.wid_details_tree.get_value(detail_iter,
                                                   self.DETAIL_PROC_ID)
@@ -340,8 +343,7 @@ class UptGui:
         if proc.cmdline:
             string += ' ' + cmdline2str(proc.cmdline)
         string += ' )'
-        self.clipboard.set_text(string, -1)
-        self.clipboard.store()
+        self.storeInClipboardAndNotify(string)
 
     def onTreeToggled(self, _widget):
         """
@@ -351,6 +353,51 @@ class UptGui:
         self.show_processes_as_tree = self.wid_tree_toggle.get_active()
         # re-populate processes view
         self.populateProcesses()
+
+    def onNotificationClose(self, _widget):
+        """
+        Notification close button pressed: close the notification
+        """
+        self.closeNotification()
+
+    def closeNotification(self):
+        """
+        Closes the notification and kills the timeout if set
+        """
+        self.notifier.set_reveal_child(False)
+        if self.notifier_timeout is not None:
+            GObject.source_remove(self.notifier_timeout)
+            self.notifier_timeout = None
+
+    def showNotification(self, message: str, timeout_ms: int = None):
+        """
+        Shows a notification with the given message text, if timeout (in ms)
+        is provided also sets a timeout to close the notification
+        """
+        self.closeNotification()
+
+        self.notifier_msg.set_text(message)
+        self.notifier.set_reveal_child(True)
+
+        if timeout_ms is not None:
+            self.notifier_timeout = GObject.timeout_add(
+                timeout_ms, self.closeNotification)
+
+    def storeInClipboard(self, string: str):
+        """
+        Stores a string in the clipboard
+        """
+        self.clipboard.set_text(string, -1)
+        self.clipboard.store()
+
+    def storeInClipboardAndNotify(self, string: str):
+        """
+        Stores a string in the clipboard and shows a "copied to clipboard"
+        notification
+        """
+        self.storeInClipboard(string)
+        msg = repr(string) if len(string) <= 100 else repr(string[:97] + "...")
+        self.showNotification(f"{msg:s}\nCopied to clipboard", 1000)
 
     def openTrace(self, proto_filename: str):
         """
@@ -512,9 +559,8 @@ class UptGui:
             for i, child_proc in enumerate(child_procs):
                 child_iter = add(f'child {i:d}',
                                  cmdline2str(child_proc.cmdline), list_iter)
-                self.wid_details_tree.set_value(child_iter,
-                                                self.DETAIL_PROC_ID,
-                                                child_proc.proc_id)
+                self.wid_details_tree.set_value(
+                    child_iter, self.DETAIL_PROC_ID, child_proc.proc_id)
             self.wid_details_view.expand_row(
                 self.wid_details_tree.get_path(list_iter), True)
 
