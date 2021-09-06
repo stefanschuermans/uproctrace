@@ -198,10 +198,10 @@ class UptGui:
         handlers = {
             'onDestroy': self.onDestroy,
             'onDetailsRowActivated': self.onDetailsRowActivated,
+            'onNotificationClose': self.onNotificationClose,
             'onProcessesCursorChanged': self.onProcessesCursorChanged,
             'onProcessesRowActivated': self.onProcessesRowActivated,
             'onTreeToggled': self.onTreeToggled,
-            'onNotificationClose': self.onNotificationClose,
         }
         self.builder.connect_signals(handlers)
         # open trace file
@@ -396,8 +396,8 @@ class UptGui:
         notification
         """
         self.storeInClipboard(string)
-        msg = string if len(string) <= 100 else string[:97] + "..."
-        self.showNotification(f"'{msg:s}'\nCopied to clipboard", 1000)
+        msg = repr(string) if len(string) <= 100 else repr(string[:97] + "...")
+        self.showNotification(f"{msg:s}\nCopied to clipboard", 1000)
 
     def openTrace(self, proto_filename: str):
         """
