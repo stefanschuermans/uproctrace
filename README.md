@@ -1,4 +1,5 @@
 # UProcTrace: User-space Process Tracing
+[![License](https://img.shields.io/badge/license-LGPLv3-blue)](./LICENSE)
 
 UProcTrace traces process executions and process ends on Linux systems.
 
