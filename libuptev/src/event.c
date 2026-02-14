@@ -20,7 +20,7 @@
  * @return 0 on success (*data, *size set),
  *         -1 on error (*data = NULL, *size = 0)
  */
-int uptev_event_pack(struct _Uproctrace__Event *event, void **data,
+int uptev_event_pack(Uproctrace__Event *event, void **data,
                      size_t *size, uptev_cleaner_t *cleaner) {
   *size = uproctrace__event__get_packed_size(event);
   *data = malloc(*size);
