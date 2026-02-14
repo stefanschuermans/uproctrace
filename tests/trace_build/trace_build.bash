@@ -26,3 +26,4 @@ grep '^ *s: "\(/\S*/\)\?proc_begin.c"$' out.dump
 grep '^ *s: "libuptpl.so"$' out.dump
 
 upt-tool trace.upt pstree
+upt-tool trace.upt stats

@@ -40,8 +40,7 @@ def calculate_stats(upt_traces: list) -> dict:
         for process in processes.getAllProcesses().values():
 
             # Ignore processes for which we do not have full information
-            if process.getBeginTimestamp() is None or process.getEndTimestamp(
-            ) is None:
+            if process.begin_timestamp is None or process.end_timestamp is None:
                 continue
 
             # Update the values
