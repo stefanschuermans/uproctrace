@@ -22,7 +22,7 @@ ls -l trace.upt
 
 upt-tool trace.upt dump | tee out.dump
 grep -A 1 '^ *cmdline {$' out.dump | grep '^ *s: "mkdir"$'
-grep '^ *s: "proc_begin.c"$' out.dump
+grep '^ *s: "\(/\S*/\)\?proc_begin.c"$' out.dump
 grep '^ *s: "libuptpl.so"$' out.dump
 
 upt-tool trace.upt pstree

@@ -49,7 +49,7 @@ def calculate_stats(upt_traces: list) -> dict:
                 attr_values[attr].append(getattr(process, attr))
 
     # Calulate the statistics
-    stats = dict()
+    stats = {}
     for attr, values in attr_values.items():
         if not values:
             stats[attr] = (0, 0, 0, 0)
