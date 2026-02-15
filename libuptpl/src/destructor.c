@@ -15,4 +15,5 @@ __attribute__((destructor)) static void destructor(void) {
   size_t size = 0;
   uptev_proc_end(&data, &size);
   uptpl_write(data, size);
+  free(data);
 }
