@@ -15,4 +15,5 @@ __attribute__((constructor)) static void constructor(void) {
   size_t size = 0;
   uptev_proc_begin(&data, &size);
   uptpl_write(data, size);
+  free(data);
 }
