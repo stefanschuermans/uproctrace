@@ -26,13 +26,13 @@ int uptev_proc_end(void **data, size_t *size) {
     return -1;
   }
 
-  struct _Uproctrace__Timespec timestamp = UPROCTRACE__TIMESPEC__INIT;
+  Uproctrace__Timespec timestamp = UPROCTRACE__TIMESPEC__INIT;
   uptev_timing_get_timestamp(&timestamp);
 
-  struct _Uproctrace__Timespec cpu_time = UPROCTRACE__TIMESPEC__INIT;
+  Uproctrace__Timespec cpu_time = UPROCTRACE__TIMESPEC__INIT;
   uptev_timing_get_proc_cpu_time(&cpu_time);
 
-  struct _Uproctrace__ProcEnd proc_end = UPROCTRACE__PROC_END__INIT;
+  Uproctrace__ProcEnd proc_end = UPROCTRACE__PROC_END__INIT;
   proc_end.pid = getpid();
   // ppid also in end event because child of fork() has no begin event
   proc_end.has_ppid = 1;
@@ -41,8 +41,8 @@ int uptev_proc_end(void **data, size_t *size) {
   proc_end.cpu_time = &cpu_time;
 
   struct rusage usage;
-  struct _Uproctrace__Timespec user_time = UPROCTRACE__TIMESPEC__INIT;
-  struct _Uproctrace__Timespec sys_time = UPROCTRACE__TIMESPEC__INIT;
+  Uproctrace__Timespec user_time = UPROCTRACE__TIMESPEC__INIT;
+  Uproctrace__Timespec sys_time = UPROCTRACE__TIMESPEC__INIT;
   if (getrusage(RUSAGE_SELF, &usage) == 0) {
     uptev_timing_timeval_to_pb(&usage.ru_utime, &user_time);
     proc_end.user_time = &user_time;
@@ -64,7 +64,7 @@ int uptev_proc_end(void **data, size_t *size) {
     proc_end.n_iv_csw = usage.ru_nivcsw;
   }
 
-  struct _Uproctrace__Event event = UPROCTRACE__EVENT__INIT;
+  Uproctrace__Event event = UPROCTRACE__EVENT__INIT;
   event.timestamp = &timestamp;
   event.proc_end = &proc_end;
 
