@@ -56,6 +56,15 @@ def gui(args):
     return 0
 
 
+def psinfo(args):
+    """
+    Print information about a process.
+    """
+    import uproctrace.psinfo
+
+    uproctrace.psinfo.psinfo(args)
+
+
 def pstree(args):
     """
     Print process tree.
@@ -101,6 +110,22 @@ def parse_args():
     )
     gui_parser.set_defaults(func=gui)
 
+    # psinfo
+    psinfo_parser = subparsers.add_parser(
+        "psinfo",
+        help="""
+        Print information about a process.
+        """,
+    )
+    psinfo_parser.add_argument(
+        "--proc_id",
+        "-i",
+        type=int,
+        required=True,
+        help="proc_id of process (this is not the pid)",
+    )
+    psinfo_parser.set_defaults(func=psinfo)
+
     # pstree
     pstree_parser = subparsers.add_parser(
         "pstree",
@@ -118,7 +143,7 @@ def parse_args():
         "--pids",
         "-p",
         action="store_true",
-        help="show PID and parent PID (in front of cmdline)",
+        help="show proc_id, pid, parent pid (in front of cmdline)",
     )
     pstree_parser.add_argument(
         "--table", "-t", action="store_true", help="output in form of a table"

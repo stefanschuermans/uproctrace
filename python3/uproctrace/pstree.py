@@ -37,7 +37,7 @@ def build(
         row = [indent]
         # PIDs
         if args.pids:
-            row += [f"{proc.pid}", f"{proc.ppid}"]
+            row += [f"{proc.proc_id}", f"{proc.pid}", f"{proc.ppid}"]
         # command line
         cmdline_str = uproctrace.formatting.cmdline2str(proc.cmdline)
         row.append(cmdline_str)
@@ -71,7 +71,7 @@ def output(args: argparse.Namespace, rows: list[list[str]]) -> None:
     if args.table:
         headers = ["tree"]
         if args.pids:
-            headers += ["pid", "ppid"]
+            headers += ["proc_id", "pid", "ppid"]
         headers.append("cmdline")
         if args.details:
             headers += [
@@ -93,6 +93,7 @@ def pstree(args: argparse.Namespace) -> None:
     """
     Print process tree.
     """
+    # pylint: disable=duplicate-code
     for upt_trace in args.trace:
         if len(args.trace) != 1:
             print(f"[{upt_trace:s}]:")
