@@ -32,10 +32,10 @@ apt-get install -y build-essential cmake gcc \
 For the graphical user interface, install the additional dependencies:
 
 ```
-apt-get install -y glade libglib2.0-dev libgtk-3-dev python3-gi
+apt-get install -y glade libglib2.0-dev libgtk-4-dev python3-gi
 ```
 
-Change to the directory of this `REAMDE.md` file.
+Change to the directory of this `README.md` file.
 
 Configure a build directory:
 
