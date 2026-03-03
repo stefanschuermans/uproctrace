@@ -67,9 +67,11 @@ endfunction(pyfile)
 
 pyfile(__init__)
 pyfile(dump)
+pyfile(formatting)
 pyfile(gui)
 pyfile(parse)
 pyfile(processes)
+pyfile(pstree)
 pyfile(stats)
 pyfile(tool)
 
