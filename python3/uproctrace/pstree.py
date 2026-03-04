@@ -5,6 +5,9 @@
 Process tree command line interface of UProcTrace: "upt-tool pstree".
 """
 import argparse
+import csv
+import json
+import sys
 import tabulate
 import uproctrace.formatting
 import uproctrace.processes
@@ -29,11 +32,8 @@ def build(
         proc = procs[0]
         del procs[0]
 
-        # tree / indentation
-        if args.table:
-            indent = "--" * (len(to_be_output) - 1) + ">"
-        else:
-            indent = "  " * (len(to_be_output) - 1)
+        # tree level / indentation level
+        indent = str(len(to_be_output) - 1)
         row = [indent]
         # PIDs
         if args.pids:
@@ -68,25 +68,44 @@ def output(args: argparse.Namespace, rows: list[list[str]]) -> None:
     """
     Output rows of pstree command.
     """
-    if args.table:
-        headers = ["tree"]
-        if args.pids:
-            headers += ["proc_id", "pid", "ppid"]
-        headers.append("cmdline")
-        if args.details:
-            headers += [
-                "begin",
-                "end",
-                "CPU time",
-                "memory",
-                "page faults",
-                "filesys ops",
-                "ctx switches",
-            ]
-        print(tabulate.tabulate(rows, headers))
-    else:
+    headers = ["tree level"]
+    if args.pids:
+        headers += ["proc_id", "pid", "ppid"]
+    headers.append("cmdline")
+    if args.details:
+        headers += [
+            "begin",
+            "end",
+            "CPU time",
+            "memory",
+            "page faults",
+            "filesys ops",
+            "ctx switches",
+        ]
+
+    if args.format == "table":
+        headers[0] = "tree"
         for row in rows:
-            print(" ".join(row))
+            row[0] = int(row[0]) * "--" + ">"
+        print(tabulate.tabulate(rows, headers))
+        return
+
+    if args.format == "csv":
+        wr = csv.writer(sys.stdout, delimiter=";", quoting=csv.QUOTE_ALL)
+        wr.writerow(headers)
+        for row in rows:
+            wr.writerow(row)
+        return
+
+    if args.format == "json":
+        data = {"headers": headers, "rows": rows}
+        print(json.dumps(data, indent=2))
+        return
+
+    # default: plain
+    for row in rows:
+        row[0] = int(row[0]) * "  "
+        print(" ".join(row))
 
 
 def pstree(args: argparse.Namespace) -> None:

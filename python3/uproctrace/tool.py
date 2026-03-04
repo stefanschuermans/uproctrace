@@ -146,7 +146,11 @@ def parse_args():
         help="show proc_id, pid, parent pid (in front of cmdline)",
     )
     pstree_parser.add_argument(
-        "--table", "-t", action="store_true", help="output in form of a table"
+        "--format",
+        "-f",
+        choices=["plain", "table", "csv", "json"],
+        default="plain",
+        help="output format",
     )
     pstree_parser.set_defaults(func=pstree)
 
