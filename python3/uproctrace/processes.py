@@ -9,13 +9,13 @@ import collections
 import uproctrace.parse
 
 
-class Process():
+class Process:
     """
     A process parsed from a trace.
     """
 
     # pylint: disable=R0904
-    def __init__(self, proc_id: int, pid: int):
+    def __init__(self, proc_id: int, pid: int) -> None:
         """
         Initialize process.
         """
@@ -27,7 +27,7 @@ class Process():
         self._children = collections.OrderedDict()  # proc_id -> Process
 
     @property
-    def begin_timestamp(self) -> list:
+    def begin_timestamp(self) -> float:
         """
         Begin timestamp of process.
         """
@@ -36,14 +36,14 @@ class Process():
         return self._begin.timestamp
 
     @property
-    def children(self) -> list:
+    def children(self) -> list["Process"]:
         """
         List of child processes.
         """
         return list(self._children.values())
 
     @property
-    def cmdline(self) -> list:
+    def cmdline(self) -> list[str]:
         """
         Command line of process.
         """
@@ -70,7 +70,7 @@ class Process():
         return self._begin.cwd
 
     @property
-    def end_timestamp(self) -> list:
+    def end_timestamp(self) -> float:
         """
         End timestamp of process.
         """
@@ -79,7 +79,7 @@ class Process():
         return self._end.timestamp
 
     @property
-    def environ(self) -> list:
+    def environ(self) -> list[str]:
         """
         Environment of process.
         """
@@ -160,21 +160,21 @@ class Process():
         return self._end.ou_block
 
     @property
-    def parent(self):
+    def parent(self) -> "Process | None":
         """
         Parent process (or None).
         """
         return self._parent
 
     @property
-    def pid(self):
+    def pid(self) -> int:
         """
         Linux process ID.
         """
         return self._pid
 
     @property
-    def ppid(self):
+    def ppid(self) -> int | None:
         """
         Linux process ID of parent process.
         """
@@ -187,7 +187,7 @@ class Process():
         return None
 
     @property
-    def proc_id(self):
+    def proc_id(self) -> int:
         """
         Process ID. (This is not the PID.)
         """
@@ -211,32 +211,32 @@ class Process():
             return None
         return self._end.user_time
 
-    def addChild(self, child):
+    def addChild(self, child) -> None:
         """
         Add a child process.
         """
         self._children[child.proc_id] = child
 
-    def removeChild(self, child_proc_id: int):
+    def removeChild(self, child_proc_id: int) -> None:
         """
         Remove a child process.
         """
         if child_proc_id in self._children:
             del self._children[child_proc_id]
 
-    def setBegin(self, proc_begin: uproctrace.parse.ProcBegin):
+    def setBegin(self, proc_begin: uproctrace.parse.ProcBegin) -> None:
         """
         Set begin event of process.
         """
         self._begin = proc_begin
 
-    def setEnd(self, proc_end: uproctrace.parse.ProcEnd):
+    def setEnd(self, proc_end: uproctrace.parse.ProcEnd) -> None:
         """
         Set end event of process.
         """
         self._end = proc_end
 
-    def setParent(self, parent):
+    def setParent(self, parent: "Process") -> None:
         """
         Set parent process.
         """
@@ -247,16 +247,20 @@ class Processes(uproctrace.parse.Visitor):
     """
     Collection of all processes from a trace.
     """
-    def __init__(self, proto_file):
+
+    def __init__(self, proto_file) -> None:
         """
         Initialize processes from a trace file (f).
         """
         super().__init__()
-        self._timeline = dict()  # time -> list(parse.BaseEvent)
-        self._all_processes = dict()  # proc_id -> process
-        self._current_processes = dict()  # pid -> process (while pid alive)
+        # time -> list(parse.BaseEvent)
+        self._timeline: dict[float, list[uproctrace.parse.BaseEvent]] = {}
+        # proc_id -> process
+        self._all_processes: dict[int, Process] = {}
+        # pid -> process (while pid alive)
+        self._current_processes: dict[int, Process] = {}
         # ordered dictionary of toplevel processes: proc_id -> Process
-        self._toplevel_processes = collections.OrderedDict()
+        self._toplevel_processes: dict[int, Process] = collections.OrderedDict()
         # parse trace
         self._readTrace(proto_file)
 
@@ -309,7 +313,7 @@ class Processes(uproctrace.parse.Visitor):
         Common processing for all events.
         """
         # store event in timeline
-        self._timeline.setdefault(event.timestamp, list()).append(event)
+        self._timeline.setdefault(event.timestamp, []).append(event)
 
     @property
     def toplevel(self) -> list:
